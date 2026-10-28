@@ -23,9 +23,11 @@ jobs:
       # pnpm 版本由 package.json 的 packageManager 字段决定，这里不要再写 version
       - uses: pnpm/action-setup@v4
 
+      # 固定到 24：Astro 7 要求 node >= 22.23.4，而 setup-node 的 "22"
+      # 会随 runner 镜像解析到不同的补丁版本（曾抓到 22.23.3 导致构建失败）
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
