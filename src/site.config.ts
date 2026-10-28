@@ -127,6 +127,18 @@ export const site = {
     sharelink: true,
   },
 
+  /**
+   * RSS 订阅行为。
+   * 全量输出：订阅者能在阅读器里翻到全部历史文章；代价是 rss.xml 随文章数变大
+   * （当前 20 篇全文约 110KB，50 篇约 280KB，主流阅读器都能接受）。
+   */
+  rss: {
+    /** 最多输出多少篇；0 表示不限制，输出全部已发布文章 */
+    maxItems: 0,
+    /** true 输出全文（content:encoded），false 只输出摘要 */
+    fullText: true,
+  },
+
   /** 结构与布局开关 */
   ui: {
     stickyHeader: true,

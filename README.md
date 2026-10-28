@@ -115,6 +115,16 @@ slug: custom-url # 可选，默认用文件路径
 - 脚注：`[^1]` + `[^1]: 说明`
 - 正文图片自动接入灯箱与懒加载
 
+## 订阅（RSS）
+
+feed 地址：<https://perry466.github.io/rss.xml>
+
+- 输出**全部已发布文章的全文**（`site.config.ts` 的 `rss.maxItems` 为 0 表示不限制条数）
+- 推一篇文章，Actions 构建成功后 feed 就更新；订阅端多久刷新取决于阅读器，通常几十分钟到几小时
+- 正文里的站内链接和图片会被改写成绝对地址，在阅读器里点得开、图不会裂
+- 草稿（`draft: true`）与 `pubDate` 晚于构建时间的文章不会进入 feed
+- 页面 `<head>` 里有 `rel="alternate"` 声明，把站点地址直接粘进阅读器就能自动发现
+
 ## 部署
 
 推送到 `main` 触发 `.github/workflows/deploy.yml`：安装依赖 → `pnpm build` → 上传 `dist` → 部署到 GitHub Pages。
