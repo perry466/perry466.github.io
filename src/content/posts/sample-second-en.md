@@ -2,6 +2,7 @@
 title: "Sample post: the second one"
 description: "A placeholder used to check list sorting, archive grouping, tag counts and previous/next links. Sample text only."
 pubDate: 2026-10-21
+category: diary
 tags: ["Sample"]
 lang: "en"
 ---

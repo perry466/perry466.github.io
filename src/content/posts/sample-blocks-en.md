@@ -2,6 +2,7 @@
 title: "Sample post: content blocks"
 description: "A placeholder post that shows how headings, lists, tables, quotes, callouts, code blocks and images are typeset. No real information here."
 pubDate: 2026-10-28
+category: notes
 tags: ["Sample", "Typography"]
 lang: "en"
 i18nKey: "sample-blocks"

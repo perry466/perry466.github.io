@@ -2,6 +2,7 @@
 title: "示例文章：正文元素总览"
 description: "这是一篇占位示例，用来展示标题、列表、表格、引用、提示框、代码块与图片的排版效果，内容与真实信息无关。"
 pubDate: 2026-10-28
+category: notes
 tags: ["示例", "排版"]
 pinned: true
 lang: "zh"

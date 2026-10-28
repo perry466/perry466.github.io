@@ -1,4 +1,4 @@
-import { currentLocale, onLocaleChange, s } from "./i18n-client";
+import { onLocaleChange, s } from "./i18n-client";
 
 interface PagefindResultData {
   url: string;
@@ -210,8 +210,8 @@ export function initSearch(): void {
       return;
     }
 
-    // 按界面语言过滤，避免英文界面搜出中文文章
-    const search = await mod.search(query, { filters: { lang: currentLocale() } });
+    // 不按界面语言过滤：列表与归档都同时展示中英文文章，搜索也保持一致
+    const search = await mod.search(query);
     if (current !== requestId) return;
 
     const slice = search.results.slice(0, 10);

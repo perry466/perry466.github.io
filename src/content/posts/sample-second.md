@@ -2,6 +2,7 @@
 title: "示例文章：第二篇"
 description: "用于验证列表页、归档、标签聚合与上一篇下一篇的占位文章，内容为示例文字，不代表任何真实信息。"
 pubDate: 2026-10-21
+category: diary
 tags: ["示例"]
 lang: "zh"
 ---

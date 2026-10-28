@@ -1,11 +1,20 @@
 ---
-import { site } from "../site.config";
+import { site, type NavItem } from "../site.config";
+import { collectCategories, categoryPath } from "../utils/categories";
+import { getAllPosts } from "../utils/posts";
 import LocaleToggle from "./LocaleToggle.astro";
 import T from "./T.astro";
 import ThemeToggle from "./ThemeToggle.astro";
 
 const path = Astro.url.pathname;
 const withSlash = path.endsWith("/") ? path : `${path}/`;
+
+/** 导航项显式收窄为 NavItem[]，才能安全访问可选的 dropdown 字段 */
+const navItems: NavItem[] = site.nav;
+
+/** 页头下拉用的分类（只列出有文章的，避免出现空页入口） */
+const posts = await getAllPosts();
+const categories = collectCategories(posts);
 
 function isActive(href: string): boolean {
   if (href === "/") return withSlash === "/";
@@ -31,11 +40,55 @@ function isActive(href: string): boolean {
 
     <nav class="site-nav" aria-label="站点导航 / Site">
       {
-        site.nav.map((item) => (
-          <a href={item.href} aria-current={isActive(item.href) ? "page" : undefined}>
-            <span class="t-zh">{item.label}</span><span class="t-en">{item.labelEn}</span>
-          </a>
-        ))
+        navItems.map((item) =>
+          item.dropdown === "categories" ? (
+            <div class="nav-item nav-item--dropdown">
+              <a href={item.href} aria-current={isActive(item.href) ? "page" : undefined}>
+                <span class="t-zh">{item.label}</span><span class="t-en">{item.labelEn}</span>
+                <svg class="nav-item__caret" viewBox="0 0 12 12" aria-hidden="true">
+                  <path
+                    d="m2.5 4.5 3.5 3.5 3.5-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
+
+              <div class="nav-panel">
+                {categories.length > 0 ? (
+                  <ul class="nav-panel__list">
+                    {categories.map((category) => (
+                      <li>
+                        <a href={categoryPath(category.slug)}>
+                          <span class="nav-panel__name">
+                            <span class="t-zh">{category.label}</span>
+                            <span class="t-en">{category.labelEn}</span>
+                          </span>
+                          <span class="nav-panel__count">{category.count}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p class="nav-panel__empty">
+                    <T k="categories.empty" />
+                  </p>
+                )}
+                <a class="nav-panel__all" href={item.href}>
+                  <T k="categories.all" />
+                  <span aria-hidden="true">→</span>
+                </a>
+              </div>
+            </div>
+          ) : (
+            <a href={item.href} aria-current={isActive(item.href) ? "page" : undefined}>
+              <span class="t-zh">{item.label}</span><span class="t-en">{item.labelEn}</span>
+            </a>
+          ),
+        )
       }
     </nav>
 
@@ -84,10 +137,23 @@ function isActive(href: string): boolean {
 
     <nav class="site-drawer__nav" aria-label="站点导航 / Site">
       {
-        site.nav.map((item) => (
-          <a href={item.href} aria-current={isActive(item.href) ? "page" : undefined} data-menu-close>
-            <span class="t-zh">{item.label}</span><span class="t-en">{item.labelEn}</span>
-          </a>
+        navItems.map((item) => (
+          <>
+            <a href={item.href} aria-current={isActive(item.href) ? "page" : undefined} data-menu-close>
+              <span class="t-zh">{item.label}</span><span class="t-en">{item.labelEn}</span>
+            </a>
+            {item.dropdown === "categories" && categories.length > 0 ? (
+              <div class="site-drawer__sub">
+                {categories.map((category) => (
+                  <a href={categoryPath(category.slug)} data-menu-close>
+                    <span class="t-zh">{category.label}</span>
+                    <span class="t-en">{category.labelEn}</span>
+                    <span class="site-drawer__sub-count">{category.count}</span>
+                  </a>
+                ))}
+              </div>
+            ) : null}
+          </>
         ))
       }
     </nav>

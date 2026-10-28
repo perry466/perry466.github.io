@@ -1,0 +1,117 @@
+---
+import PageHead from "../../../components/PageHead.astro";
+import Pagination from "../../../components/Pagination.astro";
+import PostList from "../../../components/PostList.astro";
+import T from "../../../components/T.astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { site } from "../../../site.config";
+import { tf } from "../../../i18n/ui";
+import {
+  categoryPath,
+  collectCategories,
+  postsInCategory,
+  type CategorySummary,
+} from "../../../utils/categories";
+import { getAllPosts, paginate, totalPages, type Post } from "../../../utils/posts";
+import { breadcrumbJsonLd, pageTitle } from "../../../utils/seo";
+
+interface Props {
+  category: CategorySummary;
+  categories: CategorySummary[];
+  page: number;
+  lastPage: number;
+  total: number;
+  posts: Post[];
+}
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+  const categories = collectCategories(posts);
+  const paths: { params: { category: string; page: string | undefined }; props: Props }[] = [];
+
+  for (const category of categories) {
+    const list = postsInCategory(posts, category.slug);
+    const lastPage = totalPages(list.length, site.postsPerPage);
+    for (let page = 1; page <= lastPage; page += 1) {
+      paths.push({
+        params: { category: category.slug, page: page === 1 ? undefined : String(page) },
+        props: {
+          category,
+          categories,
+          page,
+          lastPage,
+          total: list.length,
+          posts: paginate(list, site.postsPerPage, page),
+        },
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { category, categories, page, lastPage, total, posts } = Astro.props as Props;
+const base = `/categories/${category.slug}`;
+---
+
+<BaseLayout
+  title={pageTitle({ title: `${category.label} · 分类` })}
+  titleEn={pageTitle({ title: `${category.labelEn} · Categories` })}
+  description={`分类「${category.label}」下的全部文章，共 ${total} 篇。`}
+  descriptionEn={`All posts filed under ${category.labelEn}.`}
+  path={page === 1 ? `${base}/` : `${base}/${page}/`}
+  noindex={page > 1}
+  jsonLd={breadcrumbJsonLd([
+    { name: "首页", path: "/" },
+    { name: "分类", path: "/categories/" },
+    { name: category.label, path: `${base}/` },
+  ])}
+>
+  <div class="container">
+    <PageHead
+      titleZh={category.label}
+      titleEn={category.labelEn}
+      descZh={category.description ?? `该分类下的全部文章，共 ${total} 篇。`}
+      descEn={category.descriptionEn ?? `Everything filed under ${category.labelEn}.`}
+      metaZh={tf("zh", "list.total", { n: total })}
+      metaEn={tf("en", "list.total", { n: total })}
+    />
+
+    <ul class="tag-cloud category-switch">
+      <li>
+        <a class="chip" href="/categories/">
+          ← <T k="categories.backToList" />
+        </a>
+      </li>
+      {
+        categories.map((item) => (
+          <li>
+            <a
+              class="chip"
+              href={categoryPath(item.slug)}
+              aria-current={item.slug === category.slug ? "page" : undefined}
+            >
+              <span class="t-zh">{item.label}</span>
+              <span class="t-en">{item.labelEn}</span>
+              <span class="chip__count">{item.count}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    {
+      posts.length > 0 ? (
+        <PostList posts={posts} style={site.ui.postListStyle} />
+      ) : (
+        <div class="empty-state">
+          <p>
+            <T k="list.empty" />
+          </p>
+        </div>
+      )
+    }
+
+    <Pagination current={page} last={lastPage} base={base} />
+  </div>
+</BaseLayout>

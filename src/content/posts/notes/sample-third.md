@@ -2,6 +2,7 @@
 title: "示例文章：放在子目录里"
 description: "用来验证文章可以放在子目录中、URL 与 slug 仍然正确生成，正文为占位文字。"
 pubDate: 2026-10-14
+category: tech
 tags: ["示例", "工程"]
 lang: "zh"
 ---

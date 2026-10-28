@@ -3,6 +3,7 @@ import PageHead from "../components/PageHead.astro";
 import T from "../components/T.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { formatISO, toDateTime } from "../utils/format";
+import { categoryOf } from "../utils/categories";
 import { getAllPosts, groupByYear, postSlug } from "../utils/posts";
 import { tf } from "../i18n/ui";
 import { breadcrumbJsonLd, pageTitle } from "../utils/seo";
@@ -43,12 +44,26 @@ const groups = groupByYear(posts);
               </span>
             </h2>
             <ul class="archive-list">
-              {group.posts.map((post) => (
-                <li>
-                  <time datetime={toDateTime(post.data.pubDate)}>{formatISO(post.data.pubDate).slice(5)}</time>
-                  <a href={`/posts/${postSlug(post)}/`}>{post.data.title}</a>
-                </li>
-              ))}
+              {group.posts.map((post) => {
+                const category = categoryOf(post);
+                return (
+                  <li data-post-lang={post.data.lang}>
+                    <time datetime={toDateTime(post.data.pubDate)}>{formatISO(post.data.pubDate).slice(5)}</time>
+                    <span class="archive-list__main">
+                      <a href={`/posts/${postSlug(post)}/`}>{post.data.title}</a>
+                      <span class="archive-list__meta">
+                        <a class="archive-list__cat" href={`/categories/${category.slug}/`}>
+                          <span class="t-zh">{category.label}</span>
+                          <span class="t-en">{category.labelEn}</span>
+                        </a>
+                        <span class="lang-flag" data-lang={post.data.lang}>
+                          {post.data.lang === "en" ? "EN" : "中文"}
+                        </span>
+                      </span>
+                    </span>
+                  </li>
+                );
+              })}
             </ul>
           </section>
         ))

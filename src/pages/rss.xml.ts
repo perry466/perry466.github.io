@@ -3,6 +3,7 @@ import { render } from "astro:content";
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import type { APIContext } from "astro";
 import { site } from "../site.config";
+import { categoryOf } from "../utils/categories";
 import { getAllPosts } from "../utils/posts";
 import { postPath } from "../utils/related";
 
@@ -27,13 +28,15 @@ export async function GET(context: APIContext) {
       } catch {
         html = ""; // 渲染失败时退回摘要，不影响订阅可用性
       }
+      const category = categoryOf(post);
       return {
         title: post.data.title,
         pubDate: post.data.pubDate,
         description: post.data.description,
         link: postPath(post),
         author: site.author,
-        categories: post.data.tags,
+        // 分类（栏目）排在标签前面，RSS 阅读器里能直接看出文章属于哪个栏目
+        categories: [post.data.lang === "en" ? category.labelEn : category.label, ...post.data.tags],
         ...(html ? { content: html } : {}),
       };
     }),

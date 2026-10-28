@@ -1,6 +1,13 @@
 import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
+import { site } from "./site.config";
+
+/**
+ * 分类取值来自 site.config.ts 的 categories 表（封闭集合）。
+ * 这里用 z.enum 而不是自由字符串：写错 slug 会在构建期直接报错，而不是多出一个空分类。
+ */
+const categorySlugs = site.categories.map((item) => item.slug) as [string, ...string[]];
 
 /**
  * 文章集合。
@@ -16,6 +23,8 @@ const posts = defineCollection({
       description: z.string().min(20).max(160),
       pubDate: z.coerce.date(),
       updatedDate: z.coerce.date().optional(),
+      /** 栏目：单选，取值见 site.config.ts 的 categories */
+      category: z.enum(categorySlugs).default(site.categoryDefault),
       tags: z.array(z.string().min(1).max(24)).max(5).default([]),
       draft: z.boolean().default(false),
       pinned: z.boolean().default(false),

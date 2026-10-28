@@ -1,0 +1,78 @@
+---
+import PageHead from "../../components/PageHead.astro";
+import T from "../../components/T.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { tf } from "../../i18n/ui";
+import { categoryPath, collectCategories, postsInCategory } from "../../utils/categories";
+import { getAllPosts, postSlug } from "../../utils/posts";
+import { breadcrumbJsonLd, pageTitle } from "../../utils/seo";
+
+const posts = await getAllPosts();
+/** 分类 = 栏目（单选）；只列出有文章的分类，避免空入口 */
+const categories = collectCategories(posts).map((category) => ({
+  ...category,
+  preview: postsInCategory(posts, category.slug).slice(0, 3),
+}));
+---
+
+<BaseLayout
+  title={pageTitle({ title: "分类" })}
+  titleEn={pageTitle({ title: "Categories" })}
+  description="按栏目浏览文章，一篇文章只属于一个分类。"
+  descriptionEn="Browse posts by section. Each post belongs to exactly one category."
+  path="/categories/"
+  jsonLd={breadcrumbJsonLd([
+    { name: "首页", path: "/" },
+    { name: "分类", path: "/categories/" },
+  ])}
+>
+  <div class="container">
+    <PageHead
+      titleZh="分类"
+      titleEn="Categories"
+      descZh="按栏目浏览文章，一篇文章只属于一个分类。"
+      descEn="Browse posts by section. Each post belongs to exactly one category."
+      metaZh={tf("zh", "categories.total", { n: categories.length })}
+      metaEn={tf("en", "categories.total", { n: categories.length })}
+    />
+
+    {
+      categories.length > 0 ? (
+        <ul class="category-grid">
+          {categories.map((category) => (
+            <li class="category-card">
+              <a class="category-card__head" href={categoryPath(category.slug)}>
+                <span class="category-card__name">
+                  <span class="t-zh">{category.label}</span>
+                  <span class="t-en">{category.labelEn}</span>
+                </span>
+                <span class="category-card__count">
+                  <T k="categories.count" vars={{ n: category.count }} />
+                </span>
+              </a>
+              {category.description ? (
+                <p class="category-card__desc">
+                  <span class="t-zh">{category.description}</span>
+                  <span class="t-en">{category.descriptionEn ?? category.description}</span>
+                </p>
+              ) : null}
+              <ul class="category-card__posts">
+                {category.preview.map((post) => (
+                  <li>
+                    <a href={`/posts/${postSlug(post)}/`}>{post.data.title}</a>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div class="empty-state">
+          <p>
+            <T k="categories.empty" />
+          </p>
+        </div>
+      )
+    }
+  </div>
+</BaseLayout>

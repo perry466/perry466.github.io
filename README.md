@@ -83,6 +83,7 @@ title: "标题，不超过 60 字"
 description: "摘要，20–160 字，用于列表页与 SEO，不自动截正文"
 pubDate: 2026-10-28
 updatedDate: 2026-10-30 # 可选，仅内容实质更新时填写
+category: tech # 栏目，取值见 site.config.ts 的 categories，不写则归入「未分类」
 tags: ["Astro", "搜索"] # 1–5 个
 lang: "zh" # zh 或 en，默认 zh
 draft: false # true 时完全不发布
@@ -95,9 +96,15 @@ slug: custom-url # 可选，默认用文件路径
 ```
 
 - `draft: true` 或 `pubDate` 晚于构建时间的文章不会出现在页面、RSS、sitemap 与搜索索引里。
-- 缺少 `description`、标签超过 5 个、slug 格式错误都会让构建失败，并指出具体文件。
+- 缺少 `description`、标签超过 5 个、slug 格式错误、`category` 不在分类表里，都会让构建失败，并指出具体文件。
 - 文件名以 `_` 开头不会进入集合，可作为草稿池。
 - 正文图片放 `src/assets/`，用相对路径引用，构建时自动生成多尺寸。
+
+## 分类与标签
+
+- **分类**（`category`）是栏目，一篇文章只属于一个，取值是 `src/site.config.ts` 里 `categories` 的封闭集合；新增分类只需在表里加一项，`/categories/`、分类页与页头下拉会自动出现。
+- **标签**（`tags`）是关键词，一篇文章 1–5 个，随手新建，聚合在 `/tags/`。
+- 列表、归档、标签、搜索都会同时展示中英文文章，跨语言的文章带 `EN` / `中文` 标记。
 
 ## 支持的正文语法
 

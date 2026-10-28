@@ -123,33 +123,8 @@ const pageData = props.kind === "page" ? props : null;
           </div>
         )}
 
-        <p class="empty-state" data-lang-empty hidden>
-          <T k="list.emptyFiltered" />
-          <a class="text-link" href="/posts/">
-            <T k="list.emptyLink" />
-          </a>
-        </p>
-
         <Pagination current={pageData.page} last={pageData.lastPage} base="/posts" />
       </div>
     </BaseLayout>
   ) : null
 }
-
-<script>
-  // 语言过滤是纯 CSS 完成的；分页页在过滤后可能为空，这里给出提示而不是留白。
-  const hint = document.querySelector<HTMLElement>("[data-lang-empty]");
-  if (hint) {
-    const check = (): void => {
-      const visible = document.querySelectorAll(
-        ".post-list > [data-post-lang]:not([style*='display: none'])",
-      );
-      const anyVisible = Array.from(visible).some(
-        (node) => window.getComputedStyle(node).display !== "none",
-      );
-      hint.hidden = anyVisible;
-    };
-    check();
-    document.addEventListener("localechange", check);
-  }
-</script>

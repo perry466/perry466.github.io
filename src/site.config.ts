@@ -9,6 +9,20 @@ export interface NavItem {
   label: string;
   labelEn: string;
   href: string;
+  /** 下拉来源：categories 表示按 site.categories 动态生成分类面板 */
+  dropdown?: "categories";
+}
+
+/**
+ * 分类（栏目）定义：一篇文章只属于一个分类，取值是封闭集合。
+ * slug 同时是 front matter 里 `category` 的取值与 URL 片段，发布后不要改。
+ */
+export interface CategoryItem {
+  slug: string;
+  label: string;
+  labelEn: string;
+  description?: string;
+  descriptionEn?: string;
 }
 
 export const site = {
@@ -37,10 +51,57 @@ export const site = {
 
   nav: [
     { label: "文章", labelEn: "Posts", href: "/posts/" },
+    { label: "分类", labelEn: "Categories", href: "/categories/", dropdown: "categories" },
     { label: "归档", labelEn: "Archive", href: "/archive/" },
     { label: "标签", labelEn: "Tags", href: "/tags/" },
     { label: "关于", labelEn: "About", href: "/about/" },
   ] satisfies NavItem[],
+
+  /**
+   * 分类表：栏目（单选、封闭集合）。front matter 的 `category` 只能取这里的 slug，
+   * 写错会在构建期由 zod 直接报错。
+   * 没有写 `category` 的文章归到 categoryDefault 指向的那一项。
+   */
+  categories: [
+    {
+      slug: "tech",
+      label: "技术",
+      labelEn: "Tech",
+      description: "实现细节、工具链与踩过的坑。",
+      descriptionEn: "Implementation details, tooling, and things that broke.",
+    },
+    {
+      slug: "diary",
+      label: "日记",
+      labelEn: "Diary",
+      description: "按时间记下的片段，不做整理。",
+      descriptionEn: "Short entries kept in order, left unedited.",
+    },
+    {
+      slug: "essay",
+      label: "随笔",
+      labelEn: "Essay",
+      description: "想法、阅读与摘记。",
+      descriptionEn: "Thoughts, reading, and excerpts.",
+    },
+    {
+      slug: "notes",
+      label: "笔记",
+      labelEn: "Notes",
+      description: "成体系的整理，方便回头复习。",
+      descriptionEn: "Structured notes meant to be revised.",
+    },
+    {
+      slug: "uncategorized",
+      label: "未分类",
+      labelEn: "Uncategorized",
+      description: "还没归入栏目的文章。",
+      descriptionEn: "Posts not yet filed under a category.",
+    },
+  ] as CategoryItem[],
+
+  /** 没有写 category 字段时的归属（必须是上面 categories 里的 slug） */
+  categoryDefault: "uncategorized",
 
   social: [
     { label: "GitHub", href: "https://github.com/perry466" },

@@ -2,7 +2,8 @@ import { site } from "../site.config";
 import { postSlug, type Post } from "./posts";
 
 /**
- * 相关文章：标签重合度优先，同分取较新的文章。
+ * 相关文章：同栏目与标签重合度累加，同分取较新的文章。
+ * 栏目（分类）比标签粗，权重略低于一个共同标签，但足以让同一栏目下的文章互相关联。
  * 不修改传入数组，不返回当前文章。
  */
 export function relatedPosts(current: Post, pool: Post[], limit = site.maxRelated): Post[] {
@@ -15,6 +16,7 @@ export function relatedPosts(current: Post, pool: Post[], limit = site.maxRelate
       for (const tag of post.data.tags) {
         if (tags.has(tag.toLowerCase())) score += 1;
       }
+      if (post.data.category === current.data.category) score += 0.5;
       // 同语言内容优先，避免中英文混排推荐
       if (post.data.lang === current.data.lang) score += 0.25;
       return { post, score };
