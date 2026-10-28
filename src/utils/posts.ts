@@ -1,7 +1,22 @@
+import { statSync } from "node:fs";
 import { getCollection, type CollectionEntry } from "astro:content";
 import { site, type Locale } from "../site.config";
+import { formatYear } from "./format";
+import { getCommitDates } from "./git-dates";
 
-export type Post = CollectionEntry<"posts">;
+export type RawPost = CollectionEntry<"posts">;
+type RawData = RawPost["data"];
+
+/**
+ * 补齐日期后的文章数据：`pubDate` 一定存在，`updatedDate` 只在真的改过时存在。
+ * 模板拿到的都是补齐后的类型，不需要自己判断日期从哪来。
+ */
+export interface PostData extends Omit<RawData, "pubDate" | "updatedDate"> {
+  pubDate: Date;
+  updatedDate?: Date;
+}
+
+export type Post = Omit<RawPost, "data"> & { data: PostData };
 
 /** 文章公开地址使用的 slug：优先 front matter 的 slug，否则用文件路径 id */
 export function postSlug(post: Post): string {
@@ -12,6 +27,36 @@ export function postSlug(post: Post): string {
 /** 草稿与未来日期文章的统一过滤规则，模板不重复判断 */
 export function isPublished(post: Post, now: Date = new Date()): boolean {
   return post.data.draft !== true && post.data.pubDate.getTime() <= now.getTime();
+}
+
+/** 文件修改时间：git 里找不到记录时（新写完还没提交）用它兜底 */
+function fileMtime(entry: RawPost): Date | undefined {
+  if (!entry.filePath) return undefined;
+  try {
+    return statSync(entry.filePath).mtime;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * 把 front matter、git 提交时间、文件时间合成为最终日期。
+ *
+ * 优先级：
+ * - 发布日期：手写 > 首次提交时间 > 文件修改时间 > 构建时间
+ * - 更新日期：手写 > 最后一次提交时间（仅当提交次数 ≥ 2）
+ *
+ * 「提交次数 ≥ 2」这个条件是必要的：文章第一次推送时首次与最后提交是同一次，
+ * 不加判断会让每篇新文章一上线就显示「更新于同一天」。
+ */
+function resolveDates(entry: RawPost): Post {
+  const raw = entry.data;
+  const commits = getCommitDates().get(entry.id);
+  const pubDate = raw.pubDate ?? commits?.first ?? fileMtime(entry) ?? new Date();
+  const updatedDate =
+    raw.updatedDate ?? (commits && commits.count > 1 ? commits.last : undefined);
+
+  return { ...entry, data: { ...raw, pubDate, updatedDate } };
 }
 
 function byDateDesc(a: Post, b: Post): number {
@@ -28,12 +73,12 @@ let cache: Post[] | null = null;
  */
 export async function getAllPosts(): Promise<Post[]> {
   if (cache) return cache;
-  const now = new Date();
-  const entries = await getCollection("posts", (entry) => {
-    const data = entry.data as Post["data"];
-    return data.draft !== true && data.pubDate.getTime() <= now.getTime();
-  });
-  cache = entries.sort(byDateDesc);
+  const now = Date.now();
+  const entries = await getCollection("posts");
+  cache = entries
+    .map(resolveDates)
+    .filter((post) => post.data.draft !== true && post.data.pubDate.getTime() <= now)
+    .sort(byDateDesc);
   return cache;
 }
 
@@ -122,7 +167,7 @@ export interface YearGroup {
 export function groupByYear(posts: Post[]): YearGroup[] {
   const map = new Map<string, Post[]>();
   for (const post of posts) {
-    const year = String(post.data.pubDate.getFullYear());
+    const year = formatYear(post.data.pubDate);
     const list = map.get(year);
     if (list) list.push(post);
     else map.set(year, [post]);

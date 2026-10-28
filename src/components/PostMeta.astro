@@ -14,6 +14,9 @@ const body = post.body ?? "";
 const minutes = readingMinutes(body);
 const words = countWords(body);
 const updated = post.data.updatedDate;
+// 同一天改两次不必同时写「发布于」和「更新于」两个一样的日期
+const updatedDate =
+  updated && formatISO(updated) !== formatISO(post.data.pubDate) ? updated : undefined;
 const tags = postTags(post);
 ---
 
@@ -27,14 +30,14 @@ const tags = postTags(post);
           <span class="t-en">{formatLong(post.data.pubDate, "en")}</span>
         </time>
       </span>
-      {updated ? (
+      {updatedDate ? (
         <>
           <span class="dot-sep">·</span>
           <span>
             <T k="post.updated" />{" "}
-            <time datetime={toDateTime(updated)}>
-              <span class="t-zh">{formatLong(updated, "zh")}</span>
-              <span class="t-en">{formatLong(updated, "en")}</span>
+            <time datetime={toDateTime(updatedDate)}>
+              <span class="t-zh">{formatLong(updatedDate, "zh")}</span>
+              <span class="t-en">{formatLong(updatedDate, "en")}</span>
             </time>
           </span>
         </>

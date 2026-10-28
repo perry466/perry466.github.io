@@ -18,7 +18,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # fetch-depth: 0 是必须的：文章的发布日期 / 更新时间来自各自的首次与最后提交时间，
+      # 默认的浅克隆只有最后一个提交，会让所有文章都变成同一天
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # pnpm 版本由 package.json 的 packageManager 字段决定，这里不要再写 version
       - uses: pnpm/action-setup@v4
