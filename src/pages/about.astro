@@ -8,8 +8,8 @@ import { breadcrumbJsonLd, pageTitle } from "../utils/seo";
 <BaseLayout
   title={pageTitle({ title: "关于" })}
   titleEn={pageTitle({ title: "About", locale: "en" })}
-  description="测试用的个人介绍：一位虚构的前端工程师，写界面、工具链与可维护性，以及为什么这个站点选择少而清楚。"
-  descriptionEn="A sample profile: a fictional front-end engineer writing about interfaces, tooling and maintainability — and why this site prefers fewer, clearer things."
+  description={`关于${site.author}：前端工程师，写界面、工具链与可维护性，以及为什么这个站点选择少而清楚。`}
+  descriptionEn={`About ${site.authorEn} — a front-end engineer writing about interfaces, tooling and maintainability, and why this site prefers fewer, clearer things.`}
   path="/about/"
   jsonLd={breadcrumbJsonLd([
     { name: "首页", path: "/" },
@@ -26,7 +26,7 @@ import { breadcrumbJsonLd, pageTitle } from "../utils/seo";
 
     <div class="prose page-prose lang-zh">
       <p>
-        我是林一，前端工程师。日常做的事是把界面调稳、把加载压短，也把团队里重复的手工活换成脚本。写了十年代码，仍然会为一个两像素的对齐问题耗掉半小时。
+        我是{site.author}，前端工程师。日常做的事是把界面调稳、把加载压短，也把团队里重复的手工活换成脚本。写了十年代码，仍然会为一个两像素的对齐问题耗掉半小时。
       </p>
       <p>
         相信「少而清楚」比「多而齐全」更难做，也更值得做。所以这个站点没有点赞、没有阅读量统计，读完就走是正常状态。
@@ -67,7 +67,7 @@ import { breadcrumbJsonLd, pageTitle } from "../utils/seo";
 
     <div class="prose page-prose lang-en">
       <p>
-        I'm Lin Yi, a front-end engineer. Most days I make interfaces steadier and load faster, and
+        I'm {site.authorEn}, a front-end engineer. Most days I make interfaces steadier and load faster, and
         replace the repetitive manual work on a team with scripts. Ten years in, and I still lose
         half an hour to a two-pixel alignment problem.
       </p>

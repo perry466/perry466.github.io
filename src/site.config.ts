@@ -34,9 +34,13 @@ export const site = {
   descriptionEn: "Notes on technology, projects, and the long run",
   /** 生产地址，必须与部署地址一致（canonical / RSS / sitemap） */
   url: "https://perry466.github.io",
-  /** 占位：换成你自己的名字 */
-  author: "示例作者",
-  authorEn: "Site Author",
+  /**
+   * 署名：全站唯一来源，改这两个字段即可。
+   * 同时作用于：文章页脚版权、文章 JSON-LD 的 author / publisher、og:article:author、
+   * 首页右下角介绍卡片的名字、关于页首句。其他文件不要再写死名字。
+   */
+  author: "林一",
+  authorEn: "Lin Yi",
   /** 建站年份，用于页脚版权区间 */
   startYear: 2026,
   /** 默认语言：无 JS 与首次访问时使用 */
@@ -124,9 +128,10 @@ export const site = {
       "Making interfaces steadier and loading faster.",
       "Fewer, clearer things — harder, and worth it.",
     ],
-    /** 名字与简介供右下角的介绍卡片使用 */
-    title: "林一",
-    titleEn: "Lin Yi",
+    /**
+     * 名字不放这里：介绍卡片的名字统一取顶部的 `author` / `authorEn`，
+     * 避免出现「卡片叫一个名字、页脚版权叫另一个」。
+     */
     bio: "前端工程师，做界面也做工具链。这里存着些写不完的笔记：技术细节、读书摘录，和一些值得记下来的日常。",
     bioEn: "A front-end engineer working on interfaces and the tooling behind them. The unfinished notes live here: technical details, reading excerpts, and a few everyday things.",
   },

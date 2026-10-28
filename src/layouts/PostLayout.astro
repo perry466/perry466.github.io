@@ -37,6 +37,8 @@ const minutes = readingMinutes(body);
 const year = data.pubDate.getFullYear();
 const category = categoryOf(post);
 const categoryName = data.lang === "en" ? category.labelEn : category.label;
+/** 署名：中英文各取一版，来源仍是 site.config 的 author / authorEn */
+const authorName = data.lang === "en" ? site.authorEn : site.author;
 
 const zhTitle = pageTitle({ title: data.title });
 const enTitle = pageTitle({ title: translation?.data.title ?? data.title, locale: "en" });
@@ -48,8 +50,8 @@ const article = {
   description: data.description,
   datePublished: data.pubDate.toISOString(),
   dateModified: (data.updatedDate ?? data.pubDate).toISOString(),
-  author: { "@type": "Person", name: site.author, url: site.url },
-  publisher: { "@type": "Person", name: site.author },
+  author: { "@type": "Person", name: authorName, url: site.url },
+  publisher: { "@type": "Person", name: authorName },
   image: [absoluteUrl(coverUrl ?? defaultOgImage)],
   mainEntityOfPage: { "@type": "WebPage", "@id": absoluteUrl(postPath(post)) },
   inLanguage: data.lang === "en" ? "en" : "zh-CN",
@@ -160,7 +162,7 @@ const jsonLd = [
 
           <section class="article-foot__section">
             <div class="license-note">
-              <span>© {year} {site.author}</span>
+              <span>© {year} {authorName}</span>
               <span class="dot-sep"> · </span>
               <span><T k="post.copyright" vars={{ license: site.copyright }} /></span>
               <br />
