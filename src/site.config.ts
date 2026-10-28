@@ -115,7 +115,7 @@ export const site = {
      * 1–4 句最好，每句控制在 20 字以内，否则一行放不下会折行。
      */
     lines: [
-      "古之学者为己，今之学者为人。。",
+      "古之学者为己，今之学者为人。",
       "Dump people can come up with smart ideas.",
       
     ],
@@ -161,7 +161,7 @@ export const site = {
     showReadingProgress: true,
     showWordCount: true,
     /** 首页右下角「个人介绍」浮层显示多久自动收起（毫秒）；0 表示不显示 */
-    introCardMs: 8000,
+    introCardMs: 10000,
   },
 
   /** Giscus 评论：四项齐全且 features.comments 为 true 才加载 */
