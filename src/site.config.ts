@@ -108,15 +108,14 @@ export const site = {
     { label: "RSS", href: "/rss.xml" },
   ],
 
-  /** 首页自我介绍 */
-  /** 首页自我介绍：全部为占位文案，替换成你自己的 */
+  /** 首页自我介绍（当前为测试用的虚构人设，不是真实个人信息） */
   hero: {
-    title: "示例作者",
-    titleEn: "Site Author",
-    tagline: "这里写一句自我介绍。",
-    taglineEn: "One line about yourself goes here.",
-    bio: "这里写一段话介绍你在做什么、关注什么。示例文案仅用于展示排版，正式使用前请替换。",
-    bioEn: "A short paragraph about what you do and what you care about. Placeholder copy for layout preview only — replace it before going live.",
+    title: "林一",
+    titleEn: "Lin Yi",
+    tagline: "写代码，也写代码之外的事。",
+    taglineEn: "Writing code, and the things around it.",
+    bio: "前端工程师，做界面也做工具链。这个站点存着些写不完的笔记：技术细节、读书摘录，还有一些没什么用但值得记下来的日常。",
+    bioEn: "A front-end engineer who works on interfaces and the tooling behind them. This site holds the unfinished notes: technical details, reading excerpts, and a few everyday things worth writing down for no practical reason.",
   },
 
   /** 功能开关：关掉后不产生任何第三方请求 */

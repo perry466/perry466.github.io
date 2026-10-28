@@ -8,8 +8,8 @@ import { breadcrumbJsonLd, pageTitle } from "../utils/seo";
 <BaseLayout
   title={pageTitle({ title: "关于" })}
   titleEn={pageTitle({ title: "About", locale: "en" })}
-  description="关于页面示例：用于展示长文排版，正文为占位文案，请替换成你自己的介绍。"
-  descriptionEn="Sample about page showing long-form layout. Placeholder copy — replace with your own."
+  description="测试用的个人介绍：一位虚构的前端工程师，写界面、工具链与可维护性，以及为什么这个站点选择少而清楚。"
+  descriptionEn="A sample profile: a fictional front-end engineer writing about interfaces, tooling and maintainability — and why this site prefers fewer, clearer things."
   path="/about/"
   jsonLd={breadcrumbJsonLd([
     { name: "首页", path: "/" },
@@ -26,14 +26,17 @@ import { breadcrumbJsonLd, pageTitle } from "../utils/seo";
 
     <div class="prose page-prose lang-zh">
       <p>
-        这里写一段自我介绍。示例文案只用来验证排版：首段、列表、表格、小节标题在正文宽度下的表现是否符合预期。
+        我是林一，前端工程师。日常做的事是把界面调稳、把加载压短，也把团队里重复的手工活换成脚本。写了十年代码，仍然会为一个两像素的对齐问题耗掉半小时。
+      </p>
+      <p>
+        相信「少而清楚」比「多而齐全」更难做，也更值得做。所以这个站点没有点赞、没有阅读量统计，读完就走是正常状态。
       </p>
 
       <h2>现在在做</h2>
       <ul>
-        <li>第一条：写你正在做的事。</li>
-        <li>第二条：写你在维护的项目。</li>
-        <li>第三条：写你最近在学的东西。</li>
+        <li>维护两个自己每天在用的开源小工具：一个 Markdown 整理器，一个本地图片压缩脚本。</li>
+        <li>把一套用了三年的设计令牌从零重写，去掉一半历史遗留的颜色。</li>
+        <li>慢速读一本讲系统的书，每章都要停下来想一会儿，进度大概每月一章。</li>
       </ul>
 
       <h2>关注方向</h2>
@@ -42,32 +45,43 @@ import { breadcrumbJsonLd, pageTitle } from "../utils/seo";
           <tr><th>方向</th><th>具体内容</th></tr>
         </thead>
         <tbody>
-          <tr><td>方向一</td><td>替换成你自己的描述</td></tr>
-          <tr><td>方向二</td><td>替换成你自己的描述</td></tr>
-          <tr><td>方向三</td><td>替换成你自己的描述</td></tr>
+          <tr><td>排版与可读性</td><td>中文正文的行高、字距与标点节奏，长文怎样才能读得下去</td></tr>
+          <tr><td>构建与交付</td><td>静态站点的构建耗时、缓存策略，以及部署链路上能删掉的环节</td></tr>
+          <tr><td>可维护性</td><td>功能删减、配置收敛，让别人和三个月后的自己都能接手</td></tr>
         </tbody>
       </table>
+
+      <h2>写作习惯</h2>
+      <p>
+        先写最丑的一稿，允许逻辑不通、允许没有结论，改的时候再当编辑。写和改是两种需要不同心态的工作，混在一起做，两边都做不好。
+      </p>
 
       <h2>关于这个站点</h2>
       <p>
         静态生成，没有数据库，也没有自建后端。内容写在 Markdown 里，push 即发布；评论与统计默认关闭，页面不加载多余脚本。
       </p>
       <p>
-        联系方式可以写在这里，也可以把右上角的社交链接改成自己的。
+        想聊点什么，可以写信到 <a href="mailto:hello@example.com">hello@example.com</a>（示例地址，不是真实邮箱）。
       </p>
     </div>
 
     <div class="prose page-prose lang-en">
       <p>
-        Your introduction goes here. This placeholder copy exists only to check how the first
-        paragraph, lists, tables and section headings look at the default content width.
+        I'm Lin Yi, a front-end engineer. Most days I make interfaces steadier and load faster, and
+        replace the repetitive manual work on a team with scripts. Ten years in, and I still lose
+        half an hour to a two-pixel alignment problem.
+      </p>
+      <p>
+        I think "fewer, clearer" is harder to do than "more, complete" — and more worth doing. That
+        is why this site has no likes, no read counts, and why leaving after reading one post is a
+        perfectly normal outcome.
       </p>
 
       <h2>Currently</h2>
       <ul>
-        <li>What you're working on.</li>
-        <li>What you maintain.</li>
-        <li>What you're learning.</li>
+        <li>Maintaining two small open-source tools I use every day: a Markdown tidier and a local image compressor.</li>
+        <li>Rewriting a three-year-old set of design tokens from scratch, cutting half the legacy colours.</li>
+        <li>Reading a book on systems slowly — about a chapter a month, because each one needs a pause.</li>
       </ul>
 
       <h2>Focus</h2>
@@ -76,19 +90,27 @@ import { breadcrumbJsonLd, pageTitle } from "../utils/seo";
           <tr><th>Area</th><th>Details</th></tr>
         </thead>
         <tbody>
-          <tr><td>Area one</td><td>Replace with your own description</td></tr>
-          <tr><td>Area two</td><td>Replace with your own description</td></tr>
-          <tr><td>Area three</td><td>Replace with your own description</td></tr>
+          <tr><td>Typography</td><td>Line height, letter spacing and punctuation rhythm for long Chinese text</td></tr>
+          <tr><td>Build and delivery</td><td>Build time, caching, and the steps you can delete from a deploy pipeline</td></tr>
+          <tr><td>Maintainability</td><td>Removing features, collapsing configuration, keeping the project handover-able</td></tr>
         </tbody>
       </table>
+
+      <h2>How I write</h2>
+      <p>
+        Ugly first drafts. Logic allowed to break, conclusions allowed to be missing. Editing is a
+        separate pass with a separate mindset — doing both at once ruins each of them.
+      </p>
 
       <h2>About this site</h2>
       <p>
         Statically generated. No database, no custom backend. Content lives in Markdown; pushing
-        publishes. Comments and analytics are off by default, and no unnecessary scripts are
-        loaded.
+        publishes. Comments and analytics are off by default, and no unnecessary scripts are loaded.
       </p>
-      <p>Put your contact details here, or point the social links at your own accounts.</p>
+      <p>
+        If you want to talk, write to <a href="mailto:hello@example.com">hello@example.com</a> — a
+        sample address, not a real inbox.
+      </p>
     </div>
   </div>
 </BaseLayout>
