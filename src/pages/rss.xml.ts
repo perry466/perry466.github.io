@@ -22,6 +22,18 @@ function absolutize(html: string): string {
 }
 
 /**
+ * XML 纯文本转义：dc:creator 是自填字符串，出现在 CDATA 之外要自己处理。
+ */
+function escapeXml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+/**
  * RSS 2.0 全文订阅。
  *
  * - 输出全部已发布文章（`site.rss.maxItems` 为 0 时），方便订阅者回看历史
@@ -54,7 +66,9 @@ export async function GET(context: APIContext) {
         pubDate: post.data.pubDate,
         description: post.data.description,
         link: postPath(post),
-        author: site.author,
+        // RSS 2.0 的 <author> 必须是邮箱地址，写显示名会被 W3C 校验器判为 InvalidContact；
+        // 改用 Dublin Core 的 dc:creator 放署名，这也是 WordPress 等站的通行做法
+        customData: `<dc:creator>${escapeXml(site.author)}</dc:creator>`,
         // 分类（栏目）排在标签前面，RSS 阅读器里能直接看出文章属于哪个栏目
         categories: [post.data.lang === "en" ? category.labelEn : category.label, ...post.data.tags],
         ...(site.rss.fullText && html ? { content: absolutize(html) } : {}),
@@ -69,7 +83,8 @@ export async function GET(context: APIContext) {
     items,
     trailingSlash: true,
     // atom:link rel="self" 需要先声明命名空间，否则订阅器会把 feed 当成无效 XML
-    xmlns: { atom: "http://www.w3.org/2005/Atom" },
+    // dc 用于 dc:creator 署名（RSS 2.0 的 author 必须是邮箱，写显示名会被校验器判错）
+    xmlns: { atom: "http://www.w3.org/2005/Atom", dc: "http://purl.org/dc/elements/1.1/" },
     customData: [
       `<language>${site.defaultLocale === "zh" ? "zh-cn" : "en"}</language>`,
       `<lastBuildDate>${new Date(lastModified || Date.now()).toUTCString()}</lastBuildDate>`,
