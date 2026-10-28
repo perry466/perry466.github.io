@@ -93,7 +93,7 @@ const pageData = props.kind === "page" ? props : null;
   ) : pageData ? (
     <BaseLayout
       title={pageTitle({ title: "文章" })}
-      titleEn={pageTitle({ title: "Posts" })}
+      titleEn={pageTitle({ title: "Posts", locale: "en" })}
       description="按时间倒序排列的全部文章。"
       descriptionEn="Everything published so far, newest first."
       path={pageData.page === 1 ? "/posts/" : `/posts/${pageData.page}/`}

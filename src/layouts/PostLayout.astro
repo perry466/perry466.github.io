@@ -39,7 +39,7 @@ const category = categoryOf(post);
 const categoryName = data.lang === "en" ? category.labelEn : category.label;
 
 const zhTitle = pageTitle({ title: data.title });
-const enTitle = pageTitle({ title: translation?.data.title ?? data.title });
+const enTitle = pageTitle({ title: translation?.data.title ?? data.title, locale: "en" });
 
 const article = {
   "@context": "https://schema.org",

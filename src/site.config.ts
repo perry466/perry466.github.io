@@ -28,7 +28,7 @@ export interface CategoryItem {
 export const site = {
   /** 站点名：中文用于标题与页头，英文用于双语切换 */
   name: "留白",
-  nameEn: "Liubai",
+  nameEn: "Whitespace",
   /** 站点定位，用于首页 title 与 SEO */
   description: "技术、项目与长期记录",
   descriptionEn: "Notes on technology, projects, and the long run",

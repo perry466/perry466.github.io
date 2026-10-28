@@ -99,7 +99,9 @@ const showProgress = progress && site.ui.showReadingProgress;
         var root = document.documentElement;
         root.classList.add("js");
         try {
-          var storedTheme = localStorage.getItem("liubai:theme");
+          // 新前缀 whitespace:，同时兼容旧版本写入的 liubai:
+          var storedTheme =
+            localStorage.getItem("whitespace:theme") || localStorage.getItem("liubai:theme");
           var mode =
             storedTheme === "light" || storedTheme === "dark" || storedTheme === "system"
               ? storedTheme
@@ -112,7 +114,8 @@ const showProgress = progress && site.ui.showReadingProgress;
                 : "light"
               : mode;
 
-          var storedLocale = localStorage.getItem("liubai:locale");
+          var storedLocale =
+            localStorage.getItem("whitespace:locale") || localStorage.getItem("liubai:locale");
           var locale = storedLocale === "en" || storedLocale === "zh" ? storedLocale : null;
           if (!locale) {
             var prefersEnglish = (navigator.language || "zh").toLowerCase().indexOf("zh") !== 0;

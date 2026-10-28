@@ -17,7 +17,7 @@ const categories = collectCategories(posts).map((category) => ({
 
 <BaseLayout
   title={pageTitle({ title: "分类" })}
-  titleEn={pageTitle({ title: "Categories" })}
+  titleEn={pageTitle({ title: "Categories", locale: "en" })}
   description="按栏目浏览文章，一篇文章只属于一个分类。"
   descriptionEn="Browse posts by section. Each post belongs to exactly one category."
   path="/categories/"

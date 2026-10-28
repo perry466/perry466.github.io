@@ -1,4 +1,4 @@
-# 留白
+# 留白 (Whitespace)
 
 个人静态博客。Astro 静态生成，内容写在 Markdown 里，push 到 `main` 即发布。
 

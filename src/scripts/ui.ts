@@ -3,8 +3,14 @@ import type { Locale } from "./i18n-client";
 
 const html = document.documentElement;
 
-const THEME_KEY = "liubai:theme";
-const LOCALE_KEY = "liubai:locale";
+const THEME_KEY = "whitespace:theme";
+const LOCALE_KEY = "whitespace:locale";
+/** 旧版本用 liubai: 前缀，只读兼容，写入一律走新 key */
+const LEGACY_THEME_KEY = "liubai:theme";
+
+function readStored(key: string, legacy: string): string | null {
+  return localStorage.getItem(key) ?? localStorage.getItem(legacy);
+}
 
 type Mode = "light" | "dark" | "system";
 
@@ -38,7 +44,7 @@ function syncThemeButtons(): void {
 }
 
 function initTheme(): void {
-  if (!localStorage.getItem(THEME_KEY)) html.dataset.mode = "system";
+  if (!readStored(THEME_KEY, LEGACY_THEME_KEY)) html.dataset.mode = "system";
   const mq = window.matchMedia("(prefers-color-scheme: dark)");
   const onChange = (): void => {
     if ((html.dataset.mode as Mode) === "system") html.dataset.theme = systemTheme();

@@ -56,7 +56,7 @@ const base = `/tags/${tag.slug}`;
 
 <BaseLayout
   title={pageTitle({ title: `${tag.name} · 标签` })}
-  titleEn={pageTitle({ title: `${tag.name} · Tags` })}
+  titleEn={pageTitle({ title: `${tag.name} · Tags`, locale: "en" })}
   description={`标签 ${tag.name} 下的全部文章，共 ${total} 篇。`}
   descriptionEn={`All posts tagged ${tag.name}.`}
   path={page === 1 ? `${base}/` : `${base}/${page}/`}

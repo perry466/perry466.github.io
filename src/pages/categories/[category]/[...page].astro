@@ -56,7 +56,7 @@ const base = `/categories/${category.slug}`;
 
 <BaseLayout
   title={pageTitle({ title: `${category.label} · 分类` })}
-  titleEn={pageTitle({ title: `${category.labelEn} · Categories` })}
+  titleEn={pageTitle({ title: `${category.labelEn} · Categories`, locale: "en" })}
   description={`分类「${category.label}」下的全部文章，共 ${total} 篇。`}
   descriptionEn={`All posts filed under ${category.labelEn}.`}
   path={page === 1 ? `${base}/` : `${base}/${page}/`}

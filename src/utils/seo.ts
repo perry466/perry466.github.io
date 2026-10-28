@@ -19,12 +19,22 @@ export interface PageTitleOptions {
   title?: string;
   /** 是否追加站点名 */
   withSiteName?: boolean;
+  /** 输出语言：决定站点名与分隔符（英文界面用 Whitespace 和半角竖线） */
+  locale?: "zh" | "en";
 }
 
-export function pageTitle({ title, withSiteName = true }: PageTitleOptions = {}): string {
-  if (!title) return `${site.name}｜${site.description}`;
+export function pageTitle({
+  title,
+  withSiteName = true,
+  locale = "zh",
+}: PageTitleOptions = {}): string {
+  const name = locale === "en" ? site.nameEn : site.name;
+  const sep = locale === "en" ? " | " : "｜";
+  if (!title) {
+    return `${name}${sep}${locale === "en" ? site.descriptionEn : site.description}`;
+  }
   if (!withSiteName) return title;
-  return `${title}｜${site.name}`;
+  return `${title}${sep}${name}`;
 }
 
 /** 默认分享图（1200×630），没有封面时使用 */

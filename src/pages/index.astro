@@ -14,7 +14,7 @@ const listStyle = site.ui.postListStyle;
 
 <BaseLayout
   title={pageTitle()}
-  titleEn={`${site.nameEn} | ${site.descriptionEn}`}
+  titleEn={pageTitle({ locale: "en" })}
   description={site.description}
   descriptionEn={site.descriptionEn}
   path="/"
