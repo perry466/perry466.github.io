@@ -1,7 +1,7 @@
 import { statSync } from "node:fs";
 import { getCollection, type CollectionEntry } from "astro:content";
 import { site, type Locale } from "../site.config";
-import { formatYear } from "./format";
+import { formatISO } from "./format";
 import { getCommitDates } from "./git-dates";
 
 export type RawPost = CollectionEntry<"posts">;
@@ -158,22 +158,58 @@ export function readingMinutes(markdown: string): number {
   return Math.max(1, Math.round(cjk / 380 + latin / 200));
 }
 
-export interface YearGroup {
-  year: string;
+export interface MonthGroup {
+  /** 两位月份，01–12 */
+  month: string;
+  count: number;
   posts: Post[];
 }
 
-/** 归档分组：按年倒序 */
-export function groupByYear(posts: Post[]): YearGroup[] {
-  const map = new Map<string, Post[]>();
+export interface YearGroup {
+  year: string;
+  count: number;
+  /** 12 个格子各自的篇数，索引 0 = 1 月；归档页的月度密度条直接用 */
+  density: number[];
+  /** 只包含有文章的月份，按月份倒序 */
+  months: MonthGroup[];
+}
+
+/**
+ * 归档分组：年 → 月，两级都按时间倒序。
+ *
+ * 用 `formatISO` 取年月（走 Asia/Shanghai），避免 CI 的 UTC 把月初的文章算到上个月。
+ * 纯函数，不修改传入数组。
+ */
+export function groupByYearMonth(posts: Post[]): YearGroup[] {
+  const byYear = new Map<string, Map<string, Post[]>>();
+
   for (const post of posts) {
-    const year = formatYear(post.data.pubDate);
-    const list = map.get(year);
-    if (list) list.push(post);
-    else map.set(year, [post]);
+    const iso = formatISO(post.data.pubDate);
+    const year = iso.slice(0, 4);
+    const month = iso.slice(5, 7);
+    const months = byYear.get(year) ?? new Map<string, Post[]>();
+    const list = months.get(month) ?? [];
+    list.push(post);
+    months.set(month, list);
+    byYear.set(year, months);
   }
-  return [...map.entries()]
-    .map(([year, list]) => ({ year, posts: list.sort(byDateDesc) }))
+
+  return [...byYear.entries()]
+    .map(([year, months]) => {
+      const density = Array<number>(12).fill(0);
+      for (const [month, list] of months) {
+        const index = Number(month) - 1;
+        if (index >= 0 && index < 12) density[index] = list.length;
+      }
+      return {
+        year,
+        count: [...months.values()].reduce((sum, list) => sum + list.length, 0),
+        density,
+        months: [...months.entries()]
+          .map(([month, list]) => ({ month, count: list.length, posts: list }))
+          .sort((a, b) => Number(b.month) - Number(a.month)),
+      };
+    })
     .sort((a, b) => Number(b.year) - Number(a.year));
 }
 

@@ -1270,39 +1270,257 @@ a.chip[aria-current="page"] {
 }
 
 /* ---------- 归档 ---------- */
-.archive-group {
-  margin-top: var(--space-10);
-}
-
-.archive-group__title {
+/* 年份条：吸顶，滚动时由 scripts/archive.ts 高亮当前年份 */
+.archive-rail {
+  position: sticky;
+  top: var(--header-height);
+  z-index: 20;
   display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
-  font-family: var(--font-serif);
-  font-size: var(--text-xl);
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  gap: 0.3rem;
+  align-items: center;
+  margin-top: var(--space-6);
+  padding-block: 0.5rem;
+  overflow-x: auto;
+  border-bottom: var(--border-hair);
+  background-color: rgb(var(--header-bg) / 0.92);
+  -webkit-backdrop-filter: blur(10px) saturate(1.3);
+  backdrop-filter: blur(10px) saturate(1.3);
+  scrollbar-width: none;
 }
 
-.archive-group__count {
+.archive-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.archive-rail__item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  flex: none;
+  padding: 0.22rem 0.6rem;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.04em;
+  color: var(--color-faint);
+  transition:
+    color var(--dur) var(--ease),
+    background-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.archive-rail__item:hover {
+  color: var(--color-accent);
+}
+
+.archive-rail__item.is-active {
+  color: var(--color-accent);
+  background-color: var(--color-accent-soft);
+  box-shadow: inset 0 0 0 1px var(--color-accent-ring);
+}
+
+.archive-rail__count {
+  font-size: 0.68rem;
+  opacity: 0.65;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 每个年份一块 */
+.archive-year {
+  margin-top: var(--space-12);
+  scroll-margin-top: calc(var(--header-height) + 3.2rem);
+}
+
+.archive-year__head {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.9rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--color-border-strong);
+}
+
+.archive-year__title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.9rem, 4vw, 2.4rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.archive-year__count {
+  padding-bottom: 0.25rem;
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   color: var(--color-faint);
 }
 
+/* 12 格月度密度条：高度表示篇数，悬停给出「几月·几篇」并联动下方月份 */
+.archive-strip {
+  display: grid;
+  grid-template-columns: repeat(12, 12px);
+  gap: 5px;
+  height: 32px;
+  margin: 0 0 0.25rem auto;
+  padding: 0 0 2px;
+  list-style: none;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.archive-strip li {
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+}
+
+.archive-strip__cell {
+  position: relative;
+  display: block;
+  width: 12px;
+  height: 5px;
+  border-radius: 1px;
+  background-color: var(--color-accent);
+  transition:
+    height var(--dur) var(--ease),
+    opacity var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+
+.archive-strip__cell.is-empty {
+  height: 5px;
+  background-color: var(--color-border-strong);
+  opacity: 0.55;
+}
+
+.archive-strip__cell[data-level="1"] {
+  height: 10px;
+  opacity: 0.5;
+}
+
+.archive-strip__cell[data-level="2"] {
+  height: 16px;
+  opacity: 0.68;
+}
+
+.archive-strip__cell[data-level="3"] {
+  height: 22px;
+  opacity: 0.84;
+}
+
+.archive-strip__cell[data-level="4"] {
+  height: 29px;
+  opacity: 1;
+}
+
+.archive-strip__cell[data-level]:not(.is-empty):hover,
+.archive-strip__cell[data-level]:not(.is-empty):focus-visible {
+  transform: scaleX(1.45);
+  opacity: 1;
+}
+
+.archive-strip__cell::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 7px);
+  right: 0;
+  z-index: 5;
+  padding: 0.16rem 0.45rem;
+  border-radius: 4px;
+  background-color: var(--color-text);
+  color: var(--color-bg);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  line-height: 1.7;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  /* 右对齐到格子：靠右的格子提示框不会顶出容器，避免多出横向滚动 */
+  transform: translateY(3px);
+  transition:
+    opacity var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+
+.archive-strip__cell:hover::after,
+.archive-strip__cell:focus-visible::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 月份分组：<details> 原生折叠，没有 JS 也能用 */
+.archive-month {
+  margin-top: var(--space-2);
+  border-radius: 6px;
+  scroll-margin-top: calc(var(--header-height) + 3.6rem);
+  transition: background-color var(--dur-slow) var(--ease);
+}
+
+.archive-month.is-hot {
+  background-color: var(--color-accent-soft);
+  box-shadow: 0 0 0 8px var(--color-accent-soft);
+}
+
+.archive-month__head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.6rem 0.1rem;
+  list-style: none;
+  cursor: pointer;
+}
+
+.archive-month__head::-webkit-details-marker {
+  display: none;
+}
+
+.archive-month__label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  color: var(--color-text-soft);
+  transition: color var(--dur) var(--ease);
+}
+
+.archive-month__head:hover .archive-month__label {
+  color: var(--color-accent);
+}
+
+.archive-month__rule {
+  flex: 1;
+  height: 1px;
+  border-bottom: 1px dashed var(--color-border-strong);
+}
+
+.archive-month__count {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-faint);
+}
+
+.archive-month__chevron {
+  width: 14px;
+  height: 14px;
+  color: var(--color-faint);
+  transition: transform var(--dur) var(--ease);
+}
+
+.archive-month[open] .archive-month__chevron {
+  transform: rotate(180deg);
+}
+
 .archive-list {
   list-style: none;
-  margin: var(--space-4) 0 0;
+  margin: 0 0 0.5rem;
   padding: 0;
   border-top: var(--border-hair);
 }
 
 .archive-list li {
   display: grid;
-  grid-template-columns: 74px minmax(0, 1fr);
+  grid-template-columns: 2.2rem minmax(0, 1fr);
   gap: var(--space-3);
   align-items: baseline;
-  padding-block: 0.6rem;
+  padding-block: 0.55rem;
   border-bottom: var(--border-hair);
   font-size: 0.95rem;
 }
@@ -1344,6 +1562,25 @@ a.chip[aria-current="page"] {
 
 .archive-list .archive-list__cat:hover {
   color: var(--color-accent);
+}
+
+/* 窄屏：密度条换到年份标题下面一行，并按容器宽度均分，避免把页头撑出横向滚动 */
+@media (max-width: 639px) {
+  .archive-year__head {
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 0.9rem;
+  }
+
+  .archive-strip {
+    width: 100%;
+    margin: 0.4rem 0 0;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .archive-strip__cell {
+    width: 100%;
+  }
 }
 
 /* ---------- 分页 ---------- */
@@ -2101,7 +2338,7 @@ a.chip[aria-current="page"] {
   }
 
   .archive-list li {
-    grid-template-columns: 92px minmax(0, 1fr);
+    grid-template-columns: 2.2rem minmax(0, 1fr);
   }
 
   .category-grid {

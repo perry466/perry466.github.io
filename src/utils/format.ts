@@ -35,6 +35,15 @@ export function formatYear(date: Date): string {
   return String(zoned(date).year);
 }
 
+const MONTHS_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** 归档页的月份标题：中文「10 月」，英文「Oct」；month 是两位字符串 */
+export function formatMonth(month: string, locale: Locale): string {
+  const index = Number(month) - 1;
+  if (locale === "en") return MONTHS_EN[index] ?? month;
+  return `${Number(month)} 月`;
+}
+
 /** 列表左侧的「月-日」：10-28 */
 export function formatMonthDay(date: Date): string {
   const { month, day } = zoned(date);
