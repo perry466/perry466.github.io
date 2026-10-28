@@ -10,9 +10,6 @@ import { breadcrumbJsonLd, pageTitle } from "../utils/seo";
 
 const posts = await getAllPosts();
 const groups = groupByYearMonth(posts);
-
-/** 密度条的级数：超过 4 篇统一按最高级显示，避免格子高低差太夸张 */
-const level = (count: number): number => (count === 0 ? 0 : Math.min(count, 4));
 ---
 
 <BaseLayout
@@ -38,120 +35,58 @@ const level = (count: number): number => (count === 0 ? 0 : Math.min(count, 4));
 
     {
       groups.length > 0 ? (
-        <>
-          {/* 年份条：吸顶，滚动时高亮当前年份 */}
-          <nav class="archive-rail" aria-label="年份 / Years" data-archive-rail>
-            {groups.map((group) => (
-              <a
-                class="archive-rail__item"
-                href={`#y${group.year}`}
-                data-rail-year={group.year}
-              >
-                <span class="archive-rail__year">{group.year}</span>
-                <span class="archive-rail__count">{group.count}</span>
-              </a>
-            ))}
-          </nav>
-
+        <div class="timeline" data-timeline>
           {groups.map((group) => (
-            <section
-              class="archive-year"
-              id={`y${group.year}`}
-              data-archive-year={group.year}
-            >
-              <header class="archive-year__head">
-                <h2 class="archive-year__title">{group.year}</h2>
-                <span class="archive-year__count">
+            <section class="tl-year-block" id={`y${group.year}`} data-archive-year={group.year}>
+              <h2 class="tl-year">
+                <span class="tl-year__num">{group.year}</span>
+                <span class="tl-year__count">
                   <T k="archive.count" vars={{ n: group.count }} />
                 </span>
+              </h2>
 
-                {/* 12 格月度密度：有文章的月份可以点，悬停会在下方对应月份上给出反馈 */}
-                <ol class="archive-strip" aria-label={`${group.year} 年各月篇数`}>
-                  {group.density.map((count, index) => {
-                    const month = String(index + 1).padStart(2, "0");
-                    const key = `${group.year}-${month}`;
-                    const label = `${group.year} 年 ${Number(month)} 月 · ${count} 篇`;
-                    return (
-                      <li>
-                        {count > 0 ? (
-                          <a
-                            class="archive-strip__cell"
-                            href={`#m${group.year}${month}`}
-                            data-level={level(count)}
-                            data-strip-month={key}
-                            data-tip={label}
-                            aria-label={label}
-                          />
-                        ) : (
-                          <span class="archive-strip__cell is-empty" data-level="0" aria-hidden="true" />
-                        )}
-                      </li>
-                    );
-                  })}
-                </ol>
-              </header>
+              {group.months.map((month) => (
+                <div class="tl-month-block" id={`m${group.year}${month.month}`}>
+                  <h3 class="tl-month">
+                    <span class="tl-month__name">
+                      <span class="t-zh">{formatMonth(month.month, "zh")}</span>
+                      <span class="t-en">{formatMonth(month.month, "en")}</span>
+                    </span>
+                    <span class="tl-month__count">
+                      <T k="archive.count" vars={{ n: month.count }} />
+                    </span>
+                  </h3>
 
-              <div class="archive-months">
-                {group.months.map((month) => (
-                  <details
-                    class="archive-month"
-                    id={`m${group.year}${month.month}`}
-                    data-month-panel={`${group.year}-${month.month}`}
-                    open
-                  >
-                    <summary class="archive-month__head">
-                      <span class="archive-month__label">
-                        <span class="t-zh">{formatMonth(month.month, "zh")}</span>
-                        <span class="t-en">{formatMonth(month.month, "en")}</span>
-                      </span>
-                      <span class="archive-month__rule" aria-hidden="true" />
-                      <span class="archive-month__count">
-                        <T k="archive.count" vars={{ n: month.count }} />
-                      </span>
-                      <svg
-                        class="archive-month__chevron"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path d="M6 9l6 6 6-6" />
-                      </svg>
-                    </summary>
-
-                    <ul class="archive-list">
-                      {month.posts.map((post) => {
-                        const category = categoryOf(post);
-                        return (
-                          <li data-post-lang={post.data.lang}>
-                            <time datetime={toDateTime(post.data.pubDate)}>
-                              {formatISO(post.data.pubDate).slice(8)}
-                            </time>
-                            <span class="archive-list__main">
-                              <a href={`/posts/${postSlug(post)}/`}>{post.data.title}</a>
-                              <span class="archive-list__meta">
-                                <a class="archive-list__cat" href={`/categories/${category.slug}/`}>
-                                  <span class="t-zh">{category.label}</span>
-                                  <span class="t-en">{category.labelEn}</span>
-                                </a>
-                                <span class="lang-flag" data-lang={post.data.lang}>
-                                  {post.data.lang === "en" ? "EN" : "中文"}
-                                </span>
-                              </span>
+                  <ul class="tl-list">
+                    {month.posts.map((post) => {
+                      const category = categoryOf(post);
+                      const iso = formatISO(post.data.pubDate);
+                      return (
+                        <li class="tl-post" data-post-lang={post.data.lang}>
+                          <time class="tl-post__date" datetime={toDateTime(post.data.pubDate)}>
+                            {iso.slice(5)}
+                          </time>
+                          <a class="tl-post__title" href={`/posts/${postSlug(post)}/`}>
+                            {post.data.title}
+                          </a>
+                          <span class="tl-post__meta">
+                            <a class="tl-post__cat" href={`/categories/${category.slug}/`}>
+                              <span class="t-zh">{category.label}</span>
+                              <span class="t-en">{category.labelEn}</span>
+                            </a>
+                            <span class="lang-flag" data-lang={post.data.lang}>
+                              {post.data.lang === "en" ? "EN" : "中文"}
                             </span>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </details>
-                ))}
-              </div>
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ))}
             </section>
           ))}
-        </>
+        </div>
       ) : (
         <div class="empty-state">
           <p>

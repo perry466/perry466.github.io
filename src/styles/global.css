@@ -1269,317 +1269,222 @@ a.chip[aria-current="page"] {
   color: var(--color-accent);
 }
 
-/* ---------- 归档 ---------- */
-/* 年份条：吸顶，滚动时由 scripts/archive.ts 高亮当前年份 */
-.archive-rail {
-  position: sticky;
-  top: var(--header-height);
-  z-index: 20;
-  display: flex;
-  gap: 0.3rem;
-  align-items: center;
-  margin-top: var(--space-6);
-  padding-block: 0.5rem;
-  overflow-x: auto;
-  border-bottom: var(--border-hair);
-  background-color: rgb(var(--header-bg) / 0.92);
-  -webkit-backdrop-filter: blur(10px) saturate(1.3);
-  backdrop-filter: blur(10px) saturate(1.3);
-  scrollbar-width: none;
-}
-
-.archive-rail::-webkit-scrollbar {
-  display: none;
-}
-
-.archive-rail__item {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.35rem;
-  flex: none;
-  padding: 0.22rem 0.6rem;
-  border-radius: 999px;
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.04em;
-  color: var(--color-faint);
-  transition:
-    color var(--dur) var(--ease),
-    background-color var(--dur) var(--ease),
-    box-shadow var(--dur) var(--ease);
-}
-
-.archive-rail__item:hover {
-  color: var(--color-accent);
-}
-
-.archive-rail__item.is-active {
-  color: var(--color-accent);
-  background-color: var(--color-accent-soft);
-  box-shadow: inset 0 0 0 1px var(--color-accent-ring);
-}
-
-.archive-rail__count {
-  font-size: 0.68rem;
-  opacity: 0.65;
-  font-variant-numeric: tabular-nums;
-}
-
-/* 每个年份一块 */
-.archive-year {
-  margin-top: var(--space-12);
-  scroll-margin-top: calc(var(--header-height) + 3.2rem);
-}
-
-.archive-year__head {
-  display: flex;
-  align-items: flex-end;
-  gap: 0.9rem;
-  padding-bottom: 0.85rem;
-  border-bottom: 1px solid var(--color-border-strong);
-}
-
-.archive-year__title {
-  font-family: var(--font-serif);
-  font-size: clamp(1.9rem, 4vw, 2.4rem);
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: 0.02em;
-  font-variant-numeric: tabular-nums;
-}
-
-.archive-year__count {
-  padding-bottom: 0.25rem;
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: var(--color-faint);
-}
-
-/* 12 格月度密度条：高度表示篇数，悬停给出「几月·几篇」并联动下方月份 */
-.archive-strip {
-  display: grid;
-  grid-template-columns: repeat(12, 12px);
-  gap: 5px;
-  height: 32px;
-  margin: 0 0 0.25rem auto;
-  padding: 0 0 2px;
-  list-style: none;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.archive-strip li {
-  display: flex;
-  align-items: flex-end;
-  height: 100%;
-}
-
-.archive-strip__cell {
+/* ---------- 归档：时间轴 ---------- */
+/* 一条竖线贯穿全年月日；圆点挂在线上，滚动时线随阅读进度着色 */
+.timeline {
+  --label-w: 6.2rem;
+  --rail-x: calc(var(--label-w) + 1.05rem);
+  --progress: 0;
   position: relative;
-  display: block;
-  width: 12px;
-  height: 5px;
-  border-radius: 1px;
-  background-color: var(--color-accent);
-  transition:
-    height var(--dur) var(--ease),
-    opacity var(--dur) var(--ease),
-    transform var(--dur) var(--ease);
+  margin-top: var(--space-10);
+  padding-bottom: var(--space-6);
 }
 
-.archive-strip__cell.is-empty {
-  height: 5px;
-  background-color: var(--color-border-strong);
-  opacity: 0.55;
-}
-
-.archive-strip__cell[data-level="1"] {
-  height: 10px;
-  opacity: 0.5;
-}
-
-.archive-strip__cell[data-level="2"] {
-  height: 16px;
-  opacity: 0.68;
-}
-
-.archive-strip__cell[data-level="3"] {
-  height: 22px;
-  opacity: 0.84;
-}
-
-.archive-strip__cell[data-level="4"] {
-  height: 29px;
-  opacity: 1;
-}
-
-.archive-strip__cell[data-level]:not(.is-empty):hover,
-.archive-strip__cell[data-level]:not(.is-empty):focus-visible {
-  transform: scaleX(1.45);
-  opacity: 1;
-}
-
-.archive-strip__cell::after {
-  content: attr(data-tip);
+.timeline::before,
+.timeline::after {
+  content: "";
   position: absolute;
-  bottom: calc(100% + 7px);
-  right: 0;
-  z-index: 5;
-  padding: 0.16rem 0.45rem;
-  border-radius: 4px;
-  background-color: var(--color-text);
-  color: var(--color-bg);
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  line-height: 1.7;
-  white-space: nowrap;
-  opacity: 0;
+  left: var(--rail-x);
+  /* 从第一个年份圆点起笔，避免线头冒出页头 */
+  top: 1.95rem;
+  width: 1px;
+  z-index: 0;
   pointer-events: none;
-  /* 右对齐到格子：靠右的格子提示框不会顶出容器，避免多出横向滚动 */
-  transform: translateY(3px);
-  transition:
-    opacity var(--dur) var(--ease),
-    transform var(--dur) var(--ease);
 }
 
-.archive-strip__cell:hover::after,
-.archive-strip__cell:focus-visible::after {
-  opacity: 1;
-  transform: translateY(0);
+.timeline::before {
+  bottom: 0;
+  background-color: var(--color-border);
 }
 
-/* 月份分组：<details> 原生折叠，没有 JS 也能用 */
-.archive-month {
-  margin-top: var(--space-2);
-  border-radius: 6px;
-  scroll-margin-top: calc(var(--header-height) + 3.6rem);
-  transition: background-color var(--dur-slow) var(--ease);
+.timeline::after {
+  bottom: 0;
+  background-color: var(--color-accent);
+  opacity: 0.45;
+  transform: scaleY(var(--progress, 0));
+  transform-origin: top;
+  transition: transform 120ms linear;
 }
 
-.archive-month.is-hot {
-  background-color: var(--color-accent-soft);
-  box-shadow: 0 0 0 8px var(--color-accent-soft);
+/* 年份 / 月份 / 条目：左边标签右对齐到竖线左侧，正文从竖线右侧开始 */
+.tl-year,
+.tl-month,
+.tl-post {
+  position: relative;
+  padding-left: calc(var(--rail-x) + 1.35rem);
 }
 
-.archive-month__head {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  padding: 0.6rem 0.1rem;
-  list-style: none;
-  cursor: pointer;
+.tl-year {
+  margin: var(--space-16) 0 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.8rem, 3.4vw, 2.25rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
 }
 
-.archive-month__head::-webkit-details-marker {
-  display: none;
+.tl-year-block:first-child .tl-year {
+  margin-top: var(--space-4);
 }
 
-.archive-month__label {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.06em;
-  color: var(--color-text-soft);
-  transition: color var(--dur) var(--ease);
+.tl-month {
+  margin: var(--space-8) 0 var(--space-1);
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-text);
 }
 
-.archive-month__head:hover .archive-month__label {
-  color: var(--color-accent);
-}
-
-.archive-month__rule {
-  flex: 1;
-  height: 1px;
-  border-bottom: 1px dashed var(--color-border-strong);
-}
-
-.archive-month__count {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: var(--color-faint);
-}
-
-.archive-month__chevron {
-  width: 14px;
-  height: 14px;
-  color: var(--color-faint);
-  transition: transform var(--dur) var(--ease);
-}
-
-.archive-month[open] .archive-month__chevron {
-  transform: rotate(180deg);
-}
-
-.archive-list {
-  list-style: none;
-  margin: 0 0 0.5rem;
-  padding: 0;
-  border-top: var(--border-hair);
-}
-
-.archive-list li {
-  display: grid;
-  grid-template-columns: 2.2rem minmax(0, 1fr);
-  gap: var(--space-3);
-  align-items: baseline;
-  padding-block: 0.55rem;
-  border-bottom: var(--border-hair);
-  font-size: 0.95rem;
-}
-
-.archive-list time {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: var(--color-faint);
+/* 标签统一放左列，右对齐，和竖线之间留固定间距 */
+.tl-year__num,
+.tl-month__name,
+.tl-post__date {
+  position: absolute;
+  left: 0;
+  width: var(--label-w);
+  text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-.archive-list a {
+.tl-year__num {
+  top: 0;
+  line-height: 1.15;
+}
+
+.tl-month__name {
+  top: 0.1rem;
+  font-size: var(--text-sm);
+  letter-spacing: 0.02em;
   color: var(--color-text-soft);
-  transition: color var(--dur) var(--ease);
 }
 
-.archive-list a:hover {
-  color: var(--color-accent);
+.tl-post__date {
+  top: 0.1rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-faint);
 }
 
-.archive-list__main {
+/* 篇数跟在标题后面，不占左列 */
+.tl-year__count,
+.tl-month__count {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  color: var(--color-faint);
+}
+
+.tl-year__count {
+  margin-left: 0.7rem;
+  vertical-align: 0.35rem;
+}
+
+.tl-month__count {
+  margin-left: 0.55rem;
+}
+
+/* 圆点：用背景色外扩一圈，让竖线在点处断开，和参考图一致 */
+.tl-year::before,
+.tl-month::before,
+.tl-post::before {
+  content: "";
+  position: absolute;
+  left: var(--rail-x);
+  top: 0.55rem;
+  z-index: 1;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  box-shadow: 0 0 0 5px var(--color-bg);
+  transform: translate(-50%, 0);
+  transition:
+    transform var(--dur) var(--ease),
+    background-color var(--dur) var(--ease);
+}
+
+.tl-year::before {
+  top: 0.5rem;
+  width: 11px;
+  height: 11px;
+}
+
+.tl-month::before {
+  top: 0.5rem;
+  width: 8px;
+  height: 8px;
+}
+
+.tl-post::before {
+  top: 0.75rem;
+  width: 7px;
+  height: 7px;
+  background-color: var(--color-border-strong);
+}
+
+.tl-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tl-post {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 0.5rem;
-  min-width: 0;
+  gap: 0.45rem 0.6rem;
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
 }
 
-.archive-list__meta {
+.tl-post__title {
+  font-size: 0.98rem;
+  color: var(--color-text-soft);
+  transition: color var(--dur) var(--ease);
+}
+
+.tl-post:hover .tl-post__title,
+.tl-post__title:hover {
+  color: var(--color-accent);
+}
+
+.tl-post:hover::before {
+  background-color: var(--color-accent);
+  transform: translate(-50%, 0) scale(1.45);
+}
+
+.tl-post__meta {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
 }
 
-.archive-list .archive-list__cat {
+.tl-post__cat {
   font-size: var(--text-xs);
   color: var(--color-faint);
+  transition: color var(--dur) var(--ease);
 }
 
-.archive-list .archive-list__cat:hover {
+.tl-post__cat:hover {
   color: var(--color-accent);
 }
 
-/* 窄屏：密度条换到年份标题下面一行，并按容器宽度均分，避免把页头撑出横向滚动 */
 @media (max-width: 639px) {
-  .archive-year__head {
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.5rem 0.9rem;
+  .timeline {
+    --label-w: 3.9rem;
+    --rail-x: calc(var(--label-w) + 0.7rem);
   }
 
-  .archive-strip {
-    width: 100%;
-    margin: 0.4rem 0 0;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
+  /* 年份字号要压下来，否则 4 位数会压到圆点上 */
+  .tl-year {
+    font-size: 1.5rem;
   }
 
-  .archive-strip__cell {
-    width: 100%;
+  .tl-year__num {
+    line-height: 1.35;
+  }
+
+  .tl-post__meta {
+    flex-basis: auto;
   }
 }
 
