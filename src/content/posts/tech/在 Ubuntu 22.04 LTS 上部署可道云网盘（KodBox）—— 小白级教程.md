@@ -1,15 +1,11 @@
-
 ---
+
 title: "在 Ubuntu 22.04 LTS 上部署可道云网盘（KodBox）—— 小白级教程"
 description: "在 Ubuntu 22.04 LTS 上部署可道云网盘（KodBox）—— 小白级教程"
 pubDate: 2026-10-28
 category: tech
 tags: ["ubuntu", "可道云","kodbox"]
 ---
-
-中文 Web 字体动辄几兆，切分、预加载、`font-display` 都要处理，最后的效果还不一定比系统字体好。
-
-# 在 Ubuntu 22.04 LTS 上部署可道云网盘（KodBox）—— 小白级教程
 
 ------
 
