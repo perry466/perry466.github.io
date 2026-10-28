@@ -115,9 +115,9 @@ export const site = {
      * 1–4 句最好，每句控制在 20 字以内，否则一行放不下会折行。
      */
     lines: [
-      "写代码，也写代码之外的事。",
-      "把界面调稳，把加载压短。",
-      "少而清楚，比多而齐全难做。",
+      "古之学者为己，今之学者为人。。",
+      "Dump people can come up with smart ideas.",
+      
     ],
     linesEn: [
       "Writing code, and the things around it.",
