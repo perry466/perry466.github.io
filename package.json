@@ -13,6 +13,7 @@
     "build": "astro check && astro build && pagefind --site dist",
     "preview": "astro preview",
     "check": "astro check",
+    "og": "node scripts/og.mjs",
     "index": "pagefind --site dist"
   },
   "dependencies": {

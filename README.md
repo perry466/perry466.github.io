@@ -43,6 +43,7 @@ pnpm dev
 | `pnpm build` | 校验 + 静态构建 + 生成 Pagefind 搜索索引，产出 `dist/` |
 | `pnpm preview` | 以生产模式预览 `dist/`，用来验证搜索、RSS、分享信息 |
 | `pnpm index` | 只重建搜索索引（`dist` 已存在时用） |
+| `pnpm og` | 重新生成默认分享图与每篇文章的分享图（需要本机 Chrome） |
 
 `pnpm dev` 下没有搜索索引是正常的：索引由 `pagefind --site dist` 在构建后生成。要验证搜索必须先 `pnpm build` 再 `pnpm preview`。
 

@@ -8,9 +8,10 @@ import PostMeta from "../components/PostMeta.astro";
 import T from "../components/T.astro";
 import Toc from "../components/Toc.astro";
 import { site } from "../site.config";
+import { ogManifest } from "../data/og-manifest";
 import { categoryOf, categoryPath } from "../utils/categories";
 import { postPath } from "../utils/related";
-import { readingMinutes, tagSlug, type Post } from "../utils/posts";
+import { postSlug, readingMinutes, tagSlug, type Post } from "../utils/posts";
 import { absoluteUrl, breadcrumbJsonLd, defaultOgImage, pageTitle } from "../utils/seo";
 
 interface Heading {
@@ -39,6 +40,8 @@ const category = categoryOf(post);
 const categoryName = data.lang === "en" ? category.labelEn : category.label;
 /** 署名：全站只有一个作者，不随文章语言变化 */
 const authorName = site.author;
+/** 分享图：文章封面 > 脚本生成的专属卡片 > 默认图（新文章还没跑 pnpm og 时回退） */
+const ogImage = coverUrl ?? ogManifest[postSlug(post)] ?? defaultOgImage;
 
 /** 文章标题是内容，不随界面语言换；只有站点名跟着界面语言走 */
 const zhTitle = pageTitle({ title: data.title });
@@ -53,7 +56,7 @@ const article = {
   dateModified: (data.updatedDate ?? data.pubDate).toISOString(),
   author: { "@type": "Person", name: authorName, url: site.url },
   publisher: { "@type": "Person", name: authorName },
-  image: [absoluteUrl(coverUrl ?? defaultOgImage)],
+  image: [absoluteUrl(ogImage)],
   mainEntityOfPage: { "@type": "WebPage", "@id": absoluteUrl(postPath(post)) },
   inLanguage: data.lang === "en" ? "en" : "zh-CN",
   articleSection: categoryName,
@@ -79,7 +82,7 @@ const jsonLd = [
   path={postPath(post)}
   type="article"
   lang={data.lang}
-  image={coverUrl}
+  image={ogImage}
   imageAlt={data.coverAlt ?? data.title}
   publishedTime={data.pubDate.toISOString()}
   modifiedTime={data.updatedDate?.toISOString()}
