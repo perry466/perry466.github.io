@@ -29,3 +29,6 @@ dev-context/
 
 # 工具产生的本地数据，不进入仓库
 .workbuddy/
+
+# CI 构建日志（仅 Actions 内生成）
+build.log

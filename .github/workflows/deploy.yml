@@ -31,7 +31,31 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       # build 已包含 astro check 与 pagefind 索引，缺一不可
-      - run: pnpm build
+      - name: Build
+        shell: bash
+        run: |
+          set -o pipefail
+          pnpm build 2>&1 | tee build.log
+
+      # 构建失败时把关键日志写成 annotation：
+      # Actions 的原始日志必须登录才能看，annotation 可以用 API 匿名读取，便于在无 gh CLI 时定位问题
+      - name: Report build errors
+        if: failure()
+        shell: bash
+        run: |
+          if [ ! -f build.log ]; then
+            echo "::error title=build::build.log 不存在，构建未产生日志"
+            exit 0
+          fi
+          {
+            grep -inE "error|cannot|invalid|missing|failed|✗|✘" build.log | head -n 15
+            echo "--- last 8 lines ---"
+            tail -n 8 build.log
+          } | while IFS= read -r line; do
+            line=${line//'%'/'%25'}
+            line=${line//$'\r'/}
+            printf '::error title=build::%s\n' "$line"
+          done
 
       - uses: actions/upload-pages-artifact@v3
         with:
