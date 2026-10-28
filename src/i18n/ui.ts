@@ -22,6 +22,9 @@ export const ui = {
     "home.latest": "最新文章",
     "home.all": "全部文章",
     "home.readMore": "阅读全文",
+    "intro.eyebrow": "前端工程师",
+    "intro.more": "了解更多",
+    "intro.close": "关闭介绍",
 
     "post.published": "发布于",
     "post.updated": "更新于",
@@ -128,6 +131,9 @@ export const ui = {
     "home.latest": "Latest",
     "home.all": "All posts",
     "home.readMore": "Read more",
+    "intro.eyebrow": "Front-end engineer",
+    "intro.more": "Read more",
+    "intro.close": "Dismiss intro",
 
     "post.published": "Published",
     "post.updated": "Updated",

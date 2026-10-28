@@ -110,12 +110,25 @@ export const site = {
 
   /** 首页自我介绍（当前为测试用的虚构人设，不是真实个人信息） */
   hero: {
+    /**
+     * 首页开屏的打字机句子：逐行「打出 → 停住 → 删除 → 下一句」循环。
+     * 1–4 句最好，每句控制在 20 字以内，否则一行放不下会折行。
+     */
+    lines: [
+      "写代码，也写代码之外的事。",
+      "把界面调稳，把加载压短。",
+      "少而清楚，比多而齐全难做。",
+    ],
+    linesEn: [
+      "Writing code, and the things around it.",
+      "Making interfaces steadier and loading faster.",
+      "Fewer, clearer things — harder, and worth it.",
+    ],
+    /** 名字与简介供右下角的介绍卡片使用 */
     title: "林一",
     titleEn: "Lin Yi",
-    tagline: "写代码，也写代码之外的事。",
-    taglineEn: "Writing code, and the things around it.",
-    bio: "前端工程师，做界面也做工具链。这个站点存着些写不完的笔记：技术细节、读书摘录，还有一些没什么用但值得记下来的日常。",
-    bioEn: "A front-end engineer who works on interfaces and the tooling behind them. This site holds the unfinished notes: technical details, reading excerpts, and a few everyday things worth writing down for no practical reason.",
+    bio: "前端工程师，做界面也做工具链。这里存着些写不完的笔记：技术细节、读书摘录，和一些值得记下来的日常。",
+    bioEn: "A front-end engineer working on interfaces and the tooling behind them. The unfinished notes live here: technical details, reading excerpts, and a few everyday things.",
   },
 
   /** 功能开关：关掉后不产生任何第三方请求 */
@@ -147,6 +160,8 @@ export const site = {
     postListStyle: "list" as "list" | "card",
     showReadingProgress: true,
     showWordCount: true,
+    /** 首页右下角「个人介绍」浮层显示多久自动收起（毫秒）；0 表示不显示 */
+    introCardMs: 8000,
   },
 
   /** Giscus 评论：四项齐全且 features.comments 为 true 才加载 */

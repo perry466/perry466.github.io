@@ -1,0 +1,62 @@
+---
+/**
+ * 首页右下角的个人介绍浮层。
+ *
+ * 默认隐藏（hidden），由脚本在倒计时期间显示——没有 JS 时不会出现，
+ * 也不会挡内容；完整介绍还在 /about/。
+ */
+import { tf } from "../i18n/ui";
+import { site } from "../site.config";
+import T from "./T.astro";
+
+const duration = site.ui.introCardMs;
+/** 名字和身份拼成一句，避免在模板里重复写两份中文 */
+const eyebrowZh = `${site.hero.title} · ${tf("zh", "intro.eyebrow", {})}`;
+const eyebrowEn = `${site.hero.titleEn} · ${tf("en", "intro.eyebrow", {})}`;
+---
+
+{
+  duration > 0 ? (
+    <aside
+      class="intro-card"
+      data-intro
+      data-intro-duration={duration}
+      role="complementary"
+      aria-label="个人简介"
+      hidden
+    >
+      <button type="button" class="intro-card__close" data-intro-close>
+        <span class="visually-hidden">
+          <T k="intro.close" />
+        </span>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 4l8 8M12 4l-8 8" />
+        </svg>
+      </button>
+
+      <p class="intro-card__eyebrow">
+        <span class="t-zh">{eyebrowZh}</span>
+        <span class="t-en">{eyebrowEn}</span>
+      </p>
+
+      <p class="intro-card__text">
+        <span class="t-zh">{site.hero.bio}</span>
+        <span class="t-en">{site.hero.bioEn}</span>
+      </p>
+
+      <a class="intro-card__link" href="/about/">
+        <T k="intro.more" />
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h14M13 6l6 6-6 6" />
+        </svg>
+      </a>
+
+      <span class="intro-card__bar" data-intro-bar aria-hidden="true"></span>
+    </aside>
+  ) : null
+}
+
+<script>
+  import { initIntroCard } from "../scripts/intro-card";
+  initIntroCard();
+</script>
