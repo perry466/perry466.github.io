@@ -72,7 +72,6 @@ const base = `/categories/${category.slug}`;
       titleZh={category.label}
       titleEn={category.labelEn}
       descZh={category.description ?? `该分类下的全部文章，共 ${total} 篇。`}
-      descEn={category.descriptionEn ?? `Everything filed under ${category.labelEn}.`}
       metaZh={tf("zh", "list.total", { n: total })}
       metaEn={tf("en", "list.total", { n: total })}
     />

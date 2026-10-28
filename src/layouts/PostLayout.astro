@@ -37,11 +37,12 @@ const minutes = readingMinutes(body);
 const year = data.pubDate.getFullYear();
 const category = categoryOf(post);
 const categoryName = data.lang === "en" ? category.labelEn : category.label;
-/** 署名：中英文各取一版，来源仍是 site.config 的 author / authorEn */
-const authorName = data.lang === "en" ? site.authorEn : site.author;
+/** 署名：全站只有一个作者，不随文章语言变化 */
+const authorName = site.author;
 
+/** 文章标题是内容，不随界面语言换；只有站点名跟着界面语言走 */
 const zhTitle = pageTitle({ title: data.title });
-const enTitle = pageTitle({ title: translation?.data.title ?? data.title, locale: "en" });
+const enTitle = pageTitle({ title: data.title, locale: "en" });
 
 const article = {
   "@context": "https://schema.org",
@@ -75,7 +76,6 @@ const jsonLd = [
   title={zhTitle}
   titleEn={enTitle}
   description={data.description}
-  descriptionEn={translation?.data.description ?? data.description}
   path={postPath(post)}
   type="article"
   lang={data.lang}

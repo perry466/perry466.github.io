@@ -42,8 +42,8 @@ const {
   noindex = false,
 } = Astro.props;
 
-/** 未显式传入时按页面语言取署名，来源仍是 site.config 的 author / authorEn */
-const authorName = author ?? (lang === "en" ? site.authorEn : site.author);
+/** 未显式传入时使用全站唯一署名（不分语言） */
+const authorName = author ?? site.author;
 
 const canonical = absoluteUrl(canonicalPath(path));
 const imageUrl = image ? absoluteUrl(image) : absoluteUrl(defaultOgImage);

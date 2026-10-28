@@ -10,9 +10,9 @@ import { site } from "../site.config";
 import T from "./T.astro";
 
 const duration = site.ui.introCardMs;
-/** 名字和身份拼成一句，避免在模板里重复写两份中文；名字取全站唯一的 site.author */
+/** 名字和身份拼成一句：名字取全站唯一的 site.author，身份是界面文案（可切） */
 const eyebrowZh = `${site.author} · ${tf("zh", "intro.eyebrow", {})}`;
-const eyebrowEn = `${site.authorEn} · ${tf("en", "intro.eyebrow", {})}`;
+const eyebrowEn = `${site.author} · ${tf("en", "intro.eyebrow", {})}`;
 ---
 
 {
@@ -39,10 +39,7 @@ const eyebrowEn = `${site.authorEn} · ${tf("en", "intro.eyebrow", {})}`;
         <span class="t-en">{eyebrowEn}</span>
       </p>
 
-      <p class="intro-card__text">
-        <span class="t-zh">{site.hero.bio}</span>
-        <span class="t-en">{site.hero.bioEn}</span>
-      </p>
+      <p class="intro-card__text">{site.hero.bio}</p>
 
       <a class="intro-card__link" href="/about/">
         <T k="intro.more" />

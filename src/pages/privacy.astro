@@ -12,7 +12,6 @@ const analyticsOn = site.features.analytics && Boolean(site.umami.websiteId);
   title={pageTitle({ title: "隐私" })}
   titleEn={pageTitle({ title: "Privacy", locale: "en" })}
   description="这个站点收集什么、不收集什么，以及第三方服务的使用情况。"
-  descriptionEn="What this site collects, what it does not, and which third-party services are involved."
   path="/privacy/"
   jsonLd={breadcrumbJsonLd([
     { name: "首页", path: "/" },
@@ -22,7 +21,7 @@ const analyticsOn = site.features.analytics && Boolean(site.umami.websiteId);
   <div class="container">
     <PageHead titleZh="隐私" titleEn="Privacy" />
 
-    <div class="prose page-prose lang-zh">
+    <div class="prose page-prose">
       <p>这是一个纯静态站点，没有账号体系，也不要求你提交任何个人信息。以下是具体范围。</p>
 
       <h2>托管日志</h2>
@@ -66,56 +65,5 @@ const analyticsOn = site.features.analytics && Boolean(site.umami.websiteId);
       </p>
     </div>
 
-    <div class="prose page-prose lang-en">
-      <p>
-        This is a fully static site. There are no accounts and no forms asking for personal
-        information. Here is the exact scope.
-      </p>
-
-      <h2>Hosting logs</h2>
-      <p>
-        The site is hosted on GitHub Pages. GitHub records the request information it needs for
-        delivery and abuse protection (such as IP address and User-Agent) under its own privacy
-        policy. Those logs are outside this site's control and are not accessible to me.
-      </p>
-
-      <h2>Cookies and local storage</h2>
-      <p>
-        No tracking cookies are set. Two preferences are stored locally in your browser — theme and
-        interface language — so the site stays consistent on your next visit. Clearing site data
-        removes them.
-      </p>
-
-      <h2>{analyticsOn ? "Analytics" : "Analytics (currently off)"}</h2>
-      <p>
-        {
-          analyticsOn
-            ? "Umami is used for aggregate traffic statistics. It sets no cookies and collects no personally identifying information — only page views, referrers and broad device categories."
-            : "No analytics service is enabled, and no analytics script is loaded."
-        }
-      </p>
-
-      <h2>{commentsOn ? "Comments" : "Comments (currently off)"}</h2>
-      <p>
-        {
-          commentsOn
-            ? "Comments are powered by Giscus and stored in GitHub Discussions. Loading them requests giscus.app; posting requires a GitHub login, at which point GitHub's privacy policy applies."
-            : "Comments are disabled, and no comment script is loaded on article pages."
-        }
-      </p>
-
-      <h2>Third-party assets</h2>
-      <p>
-        No third-party fonts, icon libraries or ad scripts. Images are served from the same
-        repository, not from an external image host.
-      </p>
-
-      <h2>Contact and removal</h2>
-      <p>
-        If something here needs correcting or removing, reach me on
-        <a href="https://github.com/perry466" rel="noopener noreferrer" target="_blank">GitHub</a>.
-        For comment removal, the corresponding GitHub Discussion is the right place.
-      </p>
-    </div>
   </div>
 </BaseLayout>

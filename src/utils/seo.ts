@@ -31,7 +31,8 @@ export function pageTitle({
   const name = locale === "en" ? site.nameEn : site.name;
   const sep = locale === "en" ? " | " : "｜";
   if (!title) {
-    return `${name}${sep}${locale === "en" ? site.descriptionEn : site.description}`;
+    // 站点描述只有一份（内容不随界面语言切换），只有站点名按语言取
+    return `${name}${sep}${site.description}`;
   }
   if (!withSiteName) return title;
   return `${title}${sep}${name}`;

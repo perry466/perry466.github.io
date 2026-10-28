@@ -11,8 +11,8 @@ const posts = await getAllPosts();
 const pinned = getPinned(posts);
 const latest = withoutPinned(posts, pinned).slice(0, site.postsPerPage);
 const listStyle = site.ui.postListStyle;
-/** 打字机句子双语打包给脚本：切换语言时重新开始 */
-const typedLines = JSON.stringify({ zh: site.hero.lines, en: site.hero.linesEn });
+/** 打字机句子只有一份，语言切换不参与 */
+const typedLines = JSON.stringify(site.hero.lines);
 const firstLine = site.hero.lines[0] ?? "";
 ---
 
@@ -20,7 +20,6 @@ const firstLine = site.hero.lines[0] ?? "";
   title={pageTitle()}
   titleEn={pageTitle({ locale: "en" })}
   description={site.description}
-  descriptionEn={site.descriptionEn}
   path="/"
   jsonLd={websiteJsonLd()}
 >
@@ -34,10 +33,7 @@ const firstLine = site.hero.lines[0] ?? "";
             <span class="hero__caret"></span>
           </p>
           {/* 读屏用：把每句话完整说出来，避免反复朗读打字过程 */}
-          <p class="visually-hidden">
-            <span class="t-zh">{site.hero.lines.join(" ")}</span>
-            <span class="t-en">{site.hero.linesEn.join(" ")}</span>
-          </p>
+          <p class="visually-hidden">{site.hero.lines.join(" ")}</p>
           <div class="hero__actions">
             <a class="text-link" href="/posts/">
               <T k="home.all" />

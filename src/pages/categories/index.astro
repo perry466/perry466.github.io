@@ -51,10 +51,7 @@ const categories = collectCategories(posts).map((category) => ({
                 </span>
               </a>
               {category.description ? (
-                <p class="category-card__desc">
-                  <span class="t-zh">{category.description}</span>
-                  <span class="t-en">{category.descriptionEn ?? category.description}</span>
-                </p>
+                <p class="category-card__desc">{category.description}</p>
               ) : null}
               <ul class="category-card__posts">
                 {category.preview.map((post) => (

@@ -22,25 +22,23 @@ export interface CategoryItem {
   label: string;
   labelEn: string;
   description?: string;
-  descriptionEn?: string;
 }
 
 export const site = {
   /** 站点名：中文用于标题与页头，英文用于双语切换 */
   name: "留白",
   nameEn: "Whitespace",
-  /** 站点定位，用于首页 title 与 SEO */
+  /** 站点定位，用于首页 title 与 SEO。只有一份：内容不随界面语言切换 */
   description: "技术、项目与长期记录",
-  descriptionEn: "Notes on technology, projects, and the long run",
   /** 生产地址，必须与部署地址一致（canonical / RSS / sitemap） */
   url: "https://perry466.github.io",
   /**
-   * 署名：全站唯一来源，改这两个字段即可。
+   * 署名：全站唯一来源，改这一处即可。
+   * 只有一个作者，不随界面语言变化（英文页面也显示同一个名字）。
    * 同时作用于：文章页脚版权、文章 JSON-LD 的 author / publisher、og:article:author、
    * 首页右下角介绍卡片的名字、关于页首句。其他文件不要再写死名字。
    */
   author: "林一",
-  authorEn: "Lin Yi",
   /** 建站年份，用于页脚版权区间 */
   startYear: 2026,
   /** 默认语言：无 JS 与首次访问时使用 */
@@ -72,35 +70,30 @@ export const site = {
       label: "技术",
       labelEn: "Tech",
       description: "实现细节、工具链与踩过的坑。",
-      descriptionEn: "Implementation details, tooling, and things that broke.",
     },
     {
       slug: "diary",
       label: "日记",
       labelEn: "Diary",
       description: "按时间记下的片段，不做整理。",
-      descriptionEn: "Short entries kept in order, left unedited.",
     },
     {
       slug: "essay",
       label: "随笔",
       labelEn: "Essay",
       description: "想法、阅读与摘记。",
-      descriptionEn: "Thoughts, reading, and excerpts.",
     },
     {
       slug: "notes",
       label: "笔记",
       labelEn: "Notes",
       description: "成体系的整理，方便回头复习。",
-      descriptionEn: "Structured notes meant to be revised.",
     },
     {
       slug: "uncategorized",
       label: "未分类",
       labelEn: "Uncategorized",
       description: "还没归入栏目的文章。",
-      descriptionEn: "Posts not yet filed under a category.",
     },
   ] as CategoryItem[],
 
@@ -117,23 +110,20 @@ export const site = {
     /**
      * 首页开屏的打字机句子：逐行「打出 → 停住 → 删除 → 下一句」循环。
      * 1–4 句最好，每句控制在 20 字以内，否则一行放不下会折行。
+     *
+     * 只有这一份：这是你写的内容，切换界面语言不会换掉它。
+     * 语言开关只切换导航、按钮这类界面文字，不切换正文与配置里的内容。
      */
     lines: [
       "古之学者为己，今之学者为人。",
       "Dump people can come up with smart ideas.",
       
     ],
-    linesEn: [
-      "Writing code, and the things around it.",
-      "Making interfaces steadier and loading faster.",
-      "Fewer, clearer things — harder, and worth it.",
-    ],
     /**
-     * 名字不放这里：介绍卡片的名字统一取顶部的 `author` / `authorEn`，
+     * 名字不放这里：介绍卡片的名字统一取顶部的 `author`，
      * 避免出现「卡片叫一个名字、页脚版权叫另一个」。
      */
     bio: "前端工程师，做界面也做工具链。这里存着些写不完的笔记：技术细节、读书摘录，和一些值得记下来的日常。",
-    bioEn: "A front-end engineer working on interfaces and the tooling behind them. The unfinished notes live here: technical details, reading excerpts, and a few everyday things.",
   },
 
   /** 功能开关：关掉后不产生任何第三方请求 */

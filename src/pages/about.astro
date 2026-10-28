@@ -9,7 +9,6 @@ import { breadcrumbJsonLd, pageTitle } from "../utils/seo";
   title={pageTitle({ title: "关于" })}
   titleEn={pageTitle({ title: "About", locale: "en" })}
   description={`关于${site.author}：前端工程师，写界面、工具链与可维护性，以及为什么这个站点选择少而清楚。`}
-  descriptionEn={`About ${site.authorEn} — a front-end engineer writing about interfaces, tooling and maintainability, and why this site prefers fewer, clearer things.`}
   path="/about/"
   jsonLd={breadcrumbJsonLd([
     { name: "首页", path: "/" },
@@ -24,7 +23,7 @@ import { breadcrumbJsonLd, pageTitle } from "../utils/seo";
       metaEn={site.startYear ? `Since ${site.startYear}` : undefined}
     />
 
-    <div class="prose page-prose lang-zh">
+    <div class="prose page-prose">
       <p>
         我是{site.author}，前端工程师。日常做的事是把界面调稳、把加载压短，也把团队里重复的手工活换成脚本。写了十年代码，仍然会为一个两像素的对齐问题耗掉半小时。
       </p>
@@ -65,52 +64,5 @@ import { breadcrumbJsonLd, pageTitle } from "../utils/seo";
       </p>
     </div>
 
-    <div class="prose page-prose lang-en">
-      <p>
-        I'm {site.authorEn}, a front-end engineer. Most days I make interfaces steadier and load faster, and
-        replace the repetitive manual work on a team with scripts. Ten years in, and I still lose
-        half an hour to a two-pixel alignment problem.
-      </p>
-      <p>
-        I think "fewer, clearer" is harder to do than "more, complete" — and more worth doing. That
-        is why this site has no likes, no read counts, and why leaving after reading one post is a
-        perfectly normal outcome.
-      </p>
-
-      <h2>Currently</h2>
-      <ul>
-        <li>Maintaining two small open-source tools I use every day: a Markdown tidier and a local image compressor.</li>
-        <li>Rewriting a three-year-old set of design tokens from scratch, cutting half the legacy colours.</li>
-        <li>Reading a book on systems slowly — about a chapter a month, because each one needs a pause.</li>
-      </ul>
-
-      <h2>Focus</h2>
-      <table>
-        <thead>
-          <tr><th>Area</th><th>Details</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Typography</td><td>Line height, letter spacing and punctuation rhythm for long Chinese text</td></tr>
-          <tr><td>Build and delivery</td><td>Build time, caching, and the steps you can delete from a deploy pipeline</td></tr>
-          <tr><td>Maintainability</td><td>Removing features, collapsing configuration, keeping the project handover-able</td></tr>
-        </tbody>
-      </table>
-
-      <h2>How I write</h2>
-      <p>
-        Ugly first drafts. Logic allowed to break, conclusions allowed to be missing. Editing is a
-        separate pass with a separate mindset — doing both at once ruins each of them.
-      </p>
-
-      <h2>About this site</h2>
-      <p>
-        Statically generated. No database, no custom backend. Content lives in Markdown; pushing
-        publishes. Comments and analytics are off by default, and no unnecessary scripts are loaded.
-      </p>
-      <p>
-        If you want to talk, write to <a href="mailto:hello@example.com">hello@example.com</a> — a
-        sample address, not a real inbox.
-      </p>
-    </div>
   </div>
 </BaseLayout>
