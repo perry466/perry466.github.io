@@ -1,13 +1,10 @@
 ---
-
 title: "在 Ubuntu 22.04 LTS 上部署可道云网盘（KodBox）—— 小白级教程"
 description: "在 Ubuntu 22.04 LTS 上部署可道云网盘（KodBox）—— 小白级教程"
 pubDate: 2026-10-28
 category: tech
 tags: ["ubuntu", "可道云","kodbox"]
 ---
-
-------
 
 ## 第一步：更新系统并安装基础软件
 
