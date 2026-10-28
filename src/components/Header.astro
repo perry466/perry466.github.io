@@ -1,0 +1,100 @@
+---
+import { site } from "../site.config";
+import LocaleToggle from "./LocaleToggle.astro";
+import T from "./T.astro";
+import ThemeToggle from "./ThemeToggle.astro";
+
+const path = Astro.url.pathname;
+const withSlash = path.endsWith("/") ? path : `${path}/`;
+
+function isActive(href: string): boolean {
+  if (href === "/") return withSlash === "/";
+  return withSlash === href || withSlash.startsWith(href);
+}
+---
+
+<header class="site-header" data-header>
+  <div class="container site-header__inner">
+    <a class="brand" href="/" aria-label={`${site.name} · ${site.nameEn}`}>
+      <svg class="brand__mark" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <rect x="1.7" y="1.7" width="16.6" height="16.6" rx="3.4" stroke="currentColor" stroke-width="1.4" />
+        <path
+          d="M5.6 13.6 9.1 7.6a1 1 0 0 1 1.8 0l1.2 2.3 1-1.6 1.3 5.3"
+          stroke="currentColor"
+          stroke-width="1.4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <span class="t-zh">{site.name}</span><span class="t-en">{site.nameEn}</span>
+    </a>
+
+    <nav class="site-nav" aria-label="站点导航 / Site">
+      {
+        site.nav.map((item) => (
+          <a href={item.href} aria-current={isActive(item.href) ? "page" : undefined}>
+            <span class="t-zh">{item.label}</span><span class="t-en">{item.labelEn}</span>
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="header-tools">
+      <button type="button" class="search-trigger" data-search-open aria-label="搜索文章 / Search posts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="6.5"></circle>
+          <path d="m16 16 4.5 4.5"></path>
+        </svg>
+        <span class="search-trigger__label"><T k="search.open" /></span>
+        <kbd class="search-trigger__kbd">Ctrl K</kbd>
+      </button>
+
+      <ThemeToggle />
+      <LocaleToggle />
+
+      <button
+        type="button"
+        class="icon-btn menu-btn"
+        data-menu-open
+        aria-label="打开菜单 / Open menu"
+        aria-expanded="false"
+        aria-controls="site-drawer"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="site-drawer" id="site-drawer" data-drawer>
+  <div class="site-drawer__backdrop" data-menu-close></div>
+  <div class="site-drawer__panel" role="dialog" aria-modal="true" aria-label="菜单 / Menu">
+    <div class="site-drawer__top">
+      <span class="brand">
+        <span class="t-zh">{site.name}</span><span class="t-en">{site.nameEn}</span>
+      </span>
+      <button type="button" class="icon-btn" data-menu-close aria-label="关闭菜单 / Close menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6 6 18"></path>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="site-drawer__nav" aria-label="站点导航 / Site">
+      {
+        site.nav.map((item) => (
+          <a href={item.href} aria-current={isActive(item.href) ? "page" : undefined} data-menu-close>
+            <span class="t-zh">{item.label}</span><span class="t-en">{item.labelEn}</span>
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="site-drawer__tools">
+      <ThemeToggle />
+      <LocaleToggle />
+    </div>
+  </div>
+</div>

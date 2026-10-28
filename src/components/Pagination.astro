@@ -1,0 +1,50 @@
+---
+import T from "./T.astro";
+
+interface Props {
+  current: number;
+  last: number;
+  /** 不带结尾斜杠的路径，例如 /posts、/tags/astro */
+  base: string;
+}
+
+const { current, last, base } = Astro.props;
+const pageUrl = (page: number): string => (page <= 1 ? `${base}/` : `${base}/${page}/`);
+---
+
+{
+  last > 1 ? (
+    <nav class="pagination" aria-label="分页 / Pagination">
+      {current > 1 ? (
+        <a class="pagination__link" href={pageUrl(current - 1)} rel="prev">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m14 6-6 6 6 6" />
+          </svg>
+          <T k="list.prevPage" />
+        </a>
+      ) : (
+        <span class="pagination__spacer" />
+      )}
+
+      <span class="pagination__status">
+        <span class="t-zh">
+          {current} / {last}
+        </span>
+        <span class="t-en">
+          {current} / {last}
+        </span>
+      </span>
+
+      {current < last ? (
+        <a class="pagination__link" href={pageUrl(current + 1)} rel="next">
+          <T k="list.nextPage" />
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m10 6 6 6-6 6" />
+          </svg>
+        </a>
+      ) : (
+        <span class="pagination__spacer" />
+      )}
+    </nav>
+  ) : null
+}

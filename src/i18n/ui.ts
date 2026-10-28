@@ -1,0 +1,228 @@
+import type { Locale } from "../site.config";
+
+/** 双语 UI 字典。新增界面文字只改这里，不在组件中硬编码。 */
+export const ui = {
+  zh: {
+    "site.skipToContent": "跳到正文",
+    "site.menu": "菜单",
+    "site.close": "关闭",
+    "site.loading": "加载中",
+    "site.backToTop": "回到顶部",
+    "site.empty": "暂无内容",
+
+    "nav.home": "首页",
+    "nav.posts": "文章",
+    "nav.archive": "归档",
+    "nav.tags": "标签",
+    "nav.about": "关于",
+    "nav.privacy": "隐私",
+
+    "home.pinned": "置顶",
+    "home.latest": "最新文章",
+    "home.all": "全部文章",
+    "home.readMore": "阅读全文",
+
+    "post.published": "发布于",
+    "post.updated": "更新于",
+    "post.readingTime": "{n} 分钟阅读",
+    "post.words": "{n} 字",
+    "post.toc": "本页目录",
+    "post.prev": "上一篇",
+    "post.next": "下一篇",
+    "post.related": "相关文章",
+    "post.copyright": "本文采用 {license} 许可协议",
+    "post.copyLink": "复制链接",
+    "post.copied": "已复制",
+    "post.share": "分享",
+    "post.comments": "评论",
+    "post.tagsLabel": "标签",
+    "post.langSwitch": "Read in English",
+    "post.noTranslation": "本文暂无其他语言版本",
+    "post.credit": "转载请注明出处与作者。",
+
+    "list.title": "文章",
+    "list.description": "按时间倒序排列的全部文章。",
+    "list.empty": "还没有文章。",
+    "list.emptyFiltered": "当前语言下这一页没有文章，试试回到第一页。",
+    "list.emptyLink": "回到第一页",
+    "list.total": "共 {n} 篇",
+    "list.page": "第 {n} 页",
+    "list.pageOf": "第 {n} 页 / 共 {total} 页",
+    "list.prevPage": "上一页",
+    "list.nextPage": "下一页",
+    "list.pagination": "分页",
+
+    "archive.title": "归档",
+    "archive.description": "按年月浏览全部文章。",
+    "archive.count": "{n} 篇",
+
+    "tags.title": "标签",
+    "tags.description": "全部标签及其文章数量。",
+    "tags.all": "全部",
+    "tags.count": "{n} 篇",
+    "tags.empty": "还没有标签。",
+    "tags.total": "共 {n} 个标签",
+    "tags.backToList": "返回全部标签",
+
+    "search.open": "搜索",
+    "search.placeholder": "搜索文章标题或正文…",
+    "search.label": "站内搜索",
+    "search.empty": "没有找到相关结果",
+    "search.emptyHint": "换个关键词，或浏览全部文章。",
+    "search.indexMissing": "搜索索引尚未生成，请在构建后预览。",
+    "search.loading": "正在搜索…",
+    "search.results": "{n} 个结果",
+    "search.hintOpen": "打开",
+    "search.hintClose": "关闭",
+    "search.hintNavigate": "选择",
+    "search.hintEnter": "跳转",
+    "search.trigger": "搜索文章",
+
+    "theme.label": "主题",
+    "theme.light": "浅色",
+    "theme.dark": "深色",
+    "theme.system": "跟随系统",
+
+    "locale.label": "语言",
+    "locale.zh": "中文",
+    "locale.en": "English",
+
+    "404.title": "页面不存在",
+    "404.description": "这个地址没有对应内容，可能已被移动或删除。",
+    "404.back": "返回首页",
+    "404.search": "搜索文章",
+
+    "footer.license": "内容采用 {license} 许可协议",
+    "footer.builtWith": "由 Astro 构建 · 托管于 GitHub Pages",
+    "footer.rss": "订阅",
+    "footer.privacy": "隐私",
+  },
+  en: {
+    "site.skipToContent": "Skip to content",
+    "site.menu": "Menu",
+    "site.close": "Close",
+    "site.loading": "Loading",
+    "site.backToTop": "Back to top",
+    "site.empty": "Nothing here yet",
+
+    "nav.home": "Home",
+    "nav.posts": "Posts",
+    "nav.archive": "Archive",
+    "nav.tags": "Tags",
+    "nav.about": "About",
+    "nav.privacy": "Privacy",
+
+    "home.pinned": "Pinned",
+    "home.latest": "Latest",
+    "home.all": "All posts",
+    "home.readMore": "Read more",
+
+    "post.published": "Published",
+    "post.updated": "Updated",
+    "post.readingTime": "{n} min read",
+    "post.words": "{n} words",
+    "post.toc": "On this page",
+    "post.prev": "Previous",
+    "post.next": "Next",
+    "post.related": "Related",
+    "post.copyright": "Licensed under {license}",
+    "post.copyLink": "Copy link",
+    "post.copied": "Copied",
+    "post.share": "Share",
+    "post.comments": "Comments",
+    "post.tagsLabel": "Tags",
+    "post.langSwitch": "读中文",
+    "post.noTranslation": "No translation available yet",
+    "post.credit": "Please credit the source and author when reposting.",
+
+    "list.title": "Posts",
+    "list.description": "Everything, newest first.",
+    "list.empty": "No posts yet.",
+    "list.emptyFiltered": "No posts in this language on this page. Try the first page.",
+    "list.emptyLink": "Go to first page",
+    "list.total": "{n} posts",
+    "list.page": "Page {n}",
+    "list.pageOf": "Page {n} of {total}",
+    "list.prevPage": "Previous page",
+    "list.nextPage": "Next page",
+    "list.pagination": "Pagination",
+
+    "archive.title": "Archive",
+    "archive.description": "Browse every post by year and month.",
+    "archive.count": "{n} posts",
+
+    "tags.title": "Tags",
+    "tags.description": "All tags with post counts.",
+    "tags.all": "All",
+    "tags.count": "{n} posts",
+    "tags.empty": "No tags yet.",
+    "tags.total": "{n} tags",
+    "tags.backToList": "All tags",
+
+    "search.open": "Search",
+    "search.placeholder": "Search titles and full text…",
+    "search.label": "Search this site",
+    "search.empty": "No results found",
+    "search.emptyHint": "Try another keyword, or browse all posts.",
+    "search.indexMissing": "Search index not built yet. Run a build to preview search.",
+    "search.loading": "Searching…",
+    "search.results": "{n} results",
+    "search.hintOpen": "Open",
+    "search.hintClose": "Close",
+    "search.hintNavigate": "Select",
+    "search.hintEnter": "Go",
+    "search.trigger": "Search posts",
+
+    "theme.label": "Theme",
+    "theme.light": "Light",
+    "theme.dark": "Dark",
+    "theme.system": "System",
+
+    "locale.label": "Language",
+    "locale.zh": "中文",
+    "locale.en": "English",
+
+    "404.title": "Page not found",
+    "404.description": "This address has no content. It may have moved or been deleted.",
+    "404.back": "Back home",
+    "404.search": "Search posts",
+
+    "footer.license": "Content licensed under {license}",
+    "footer.builtWith": "Built with Astro · Hosted on GitHub Pages",
+    "footer.rss": "RSS",
+    "footer.privacy": "Privacy",
+  },
+} as const;
+
+export type UIKey = keyof (typeof ui)["zh"];
+
+/** 取文案；缺失时回退中文，再回退 key 本身，避免运行时抛错。 */
+export function t(locale: Locale, key: UIKey): string {
+  return ui[locale]?.[key] ?? ui.zh[key] ?? key;
+}
+
+/** 简单的占位符替换：{n} / {total} / {license} */
+export function tf(locale: Locale, key: UIKey, vars: Record<string, string | number>): string {
+  return t(locale, key).replace(/\{(\w+)\}/g, (_, name: string) =>
+    name in vars ? String(vars[name]) : `{${name}}`,
+  );
+}
+
+/** 供客户端脚本使用的轻量字典（只包含需要动态更新的键） */
+export const clientStrings = {
+  searchPlaceholder: { zh: ui.zh["search.placeholder"], en: ui.en["search.placeholder"] },
+  searchLabel: { zh: ui.zh["search.label"], en: ui.en["search.label"] },
+  searchEmpty: { zh: ui.zh["search.empty"], en: ui.en["search.empty"] },
+  searchEmptyHint: { zh: ui.zh["search.emptyHint"], en: ui.en["search.emptyHint"] },
+  searchIndexMissing: { zh: ui.zh["search.indexMissing"], en: ui.en["search.indexMissing"] },
+  searchLoading: { zh: ui.zh["search.loading"], en: ui.en["search.loading"] },
+  searchResults: { zh: ui.zh["search.results"], en: ui.en["search.results"] },
+  themeLabel: { zh: ui.zh["theme.label"], en: ui.en["theme.label"] },
+  themeLight: { zh: ui.zh["theme.light"], en: ui.en["theme.light"] },
+  themeDark: { zh: ui.zh["theme.dark"], en: ui.en["theme.dark"] },
+  themeSystem: { zh: ui.zh["theme.system"], en: ui.en["theme.system"] },
+  localeLabel: { zh: ui.zh["locale.label"], en: ui.en["locale.label"] },
+  copied: { zh: ui.zh["post.copied"], en: ui.en["post.copied"] },
+  copyLink: { zh: ui.zh["post.copyLink"], en: ui.en["post.copyLink"] },
+  backToTop: { zh: ui.zh["site.backToTop"], en: ui.en["site.backToTop"] },
+} as const;

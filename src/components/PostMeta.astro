@@ -1,0 +1,80 @@
+---
+import T from "./T.astro";
+import { site } from "../site.config";
+import { formatISO, formatLong, toDateTime } from "../utils/format";
+import { countWords, postTags, readingMinutes, type Post } from "../utils/posts";
+
+interface Props {
+  post: Post;
+  variant?: "article" | "list";
+}
+
+const { post, variant = "article" } = Astro.props;
+const body = post.body ?? "";
+const minutes = readingMinutes(body);
+const words = countWords(body);
+const updated = post.data.updatedDate;
+const tags = postTags(post);
+---
+
+{
+  variant === "article" ? (
+    <div class="article-head__meta">
+      <span>
+        <T k="post.published" />{" "}
+        <time datetime={toDateTime(post.data.pubDate)}>
+          <span class="t-zh">{formatLong(post.data.pubDate, "zh")}</span>
+          <span class="t-en">{formatLong(post.data.pubDate, "en")}</span>
+        </time>
+      </span>
+      {updated ? (
+        <>
+          <span class="dot-sep">·</span>
+          <span>
+            <T k="post.updated" />{" "}
+            <time datetime={toDateTime(updated)}>
+              <span class="t-zh">{formatLong(updated, "zh")}</span>
+              <span class="t-en">{formatLong(updated, "en")}</span>
+            </time>
+          </span>
+        </>
+      ) : null}
+      <span class="dot-sep">·</span>
+      <span>
+        <T k="post.readingTime" vars={{ n: minutes }} />
+      </span>
+      {site.ui.showWordCount ? (
+        <>
+          <span class="dot-sep">·</span>
+          <span>
+            <T k="post.words" vars={{ n: words }} />
+          </span>
+        </>
+      ) : null}
+    </div>
+  ) : (
+    <div class="post-item__meta">
+      <time class="post-item__date" datetime={toDateTime(post.data.pubDate)}>
+        {formatISO(post.data.pubDate)}
+      </time>
+      <span class="dot-sep post-item__date">·</span>
+      <span>
+        <T k="post.readingTime" vars={{ n: minutes }} />
+      </span>
+      {tags.length > 0 ? (
+        <>
+          <span class="dot-sep">·</span>
+          <ul class="post-item__tags">
+            {tags.map((tag) => (
+              <li>
+                <a class="chip" href={`/tags/${tag.slug}/`}>
+                  {tag.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : null}
+    </div>
+  )
+}

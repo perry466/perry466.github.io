@@ -1,0 +1,60 @@
+---
+import T from "./T.astro";
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+  variant?: "aside" | "inline";
+}
+
+const { headings, variant = "aside" } = Astro.props;
+
+/** 目录只用 h2 / h3，避免层级过深；少于两条时不显示。 */
+const items = headings.filter(
+  (heading) =>
+    (heading.depth === 2 || heading.depth === 3) &&
+    // 脚注区由 Markdown 自动生成，不进入目录
+    heading.slug !== "footnotes" &&
+    heading.text.trim().toLowerCase() !== "footnotes" &&
+    heading.text.trim() !== "脚注",
+);
+const show = items.length >= 2;
+---
+
+{
+  show && variant === "aside" ? (
+    <aside class="toc-aside">
+      <nav class="toc" aria-labelledby="toc-title" data-toc>
+        <p class="toc__title" id="toc-title">
+          <T k="post.toc" />
+        </p>
+        <ul class="toc__list">
+          {items.map((heading) => (
+            <li class={`depth-${heading.depth}`}>
+              <a href={`#${heading.slug}`}>{heading.text}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </aside>
+  ) : show ? (
+    <details class="toc-inline">
+      <summary>
+        <T k="post.toc" />
+        <span class="toc__count">{items.length}</span>
+      </summary>
+      <ul class="toc__list">
+        {items.map((heading) => (
+          <li class={`depth-${heading.depth}`}>
+            <a href={`#${heading.slug}`}>{heading.text}</a>
+          </li>
+        ))}
+      </ul>
+    </details>
+  ) : null
+}

@@ -1,0 +1,95 @@
+---
+import PostList from "../components/PostList.astro";
+import T from "../components/T.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { site } from "../site.config";
+import { getAllPosts, getPinned, withoutPinned } from "../utils/posts";
+import { pageTitle, websiteJsonLd } from "../utils/seo";
+
+const posts = await getAllPosts();
+const pinned = getPinned(posts);
+const latest = withoutPinned(posts, pinned).slice(0, site.postsPerPage);
+const listStyle = site.ui.postListStyle;
+---
+
+<BaseLayout
+  title={pageTitle()}
+  titleEn={`${site.nameEn} | ${site.descriptionEn}`}
+  description={site.description}
+  descriptionEn={site.descriptionEn}
+  path="/"
+  jsonLd={websiteJsonLd()}
+>
+  <div class="container">
+    {
+      site.ui.showHomeHero ? (
+        <section class="hero">
+          <p class="hero__eyebrow">
+            <span class="t-zh">记录 · 项目 · 技术</span>
+            <span class="t-en">Notes · Projects · Tech</span>
+          </p>
+          <h1 class="hero__title">
+            <span class="t-zh">{site.hero.title}</span>
+            <span class="t-en">{site.hero.titleEn}</span>
+          </h1>
+          <p class="hero__tagline">
+            <span class="t-zh">{site.hero.tagline}</span>
+            <span class="t-en">{site.hero.taglineEn}</span>
+          </p>
+          <p class="hero__bio">
+            <span class="t-zh">{site.hero.bio}</span>
+            <span class="t-en">{site.hero.bioEn}</span>
+          </p>
+          <div class="hero__actions">
+            <a class="text-link" href="/posts/">
+              <T k="home.all" />
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </a>
+            <a class="text-link" href="/about/">
+              <T k="nav.about" />
+            </a>
+            <a class="text-link" href="/rss.xml">RSS</a>
+          </div>
+        </section>
+      ) : null
+    }
+
+    {
+      pinned.length > 0 ? (
+        <section class="section">
+          <div class="section__head">
+            <h2 class="section__title">
+              <T k="home.pinned" />
+            </h2>
+          </div>
+          <PostList posts={pinned} style={listStyle} />
+        </section>
+      ) : null
+    }
+
+    <section class="section">
+      <div class="section__head">
+        <h2 class="section__title">
+          <T k="home.latest" />
+        </h2>
+        <a class="section__more" href="/posts/">
+          <T k="home.all" /> →
+        </a>
+      </div>
+
+      {
+        latest.length > 0 ? (
+          <PostList posts={latest} style={listStyle} />
+        ) : (
+          <div class="empty-state">
+            <p>
+              <T k="list.empty" />
+            </p>
+          </div>
+        )
+      }
+    </section>
+  </div>
+</BaseLayout>

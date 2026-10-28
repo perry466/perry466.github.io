@@ -1,0 +1,545 @@
+/* ==========================================================================
+   正文排版：只作用于 Markdown 渲染结果（.prose 内）。
+   不要在这里写页面骨架或组件样式。
+   ========================================================================== */
+
+.prose {
+  max-width: var(--content-width);
+  margin-inline: auto;
+  font-size: var(--text-base);
+  line-height: var(--leading-base);
+  color: var(--color-text-soft);
+  overflow-wrap: break-word;
+}
+
+/* ---------- 段落与标题 ---------- */
+.prose > * + * {
+  margin-top: 1.15em;
+}
+
+.prose p {
+  margin-bottom: 0;
+}
+
+.prose h2,
+.prose h3,
+.prose h4 {
+  color: var(--color-text);
+  scroll-margin-top: calc(var(--header-height) + 1.5rem);
+  text-wrap: balance;
+}
+
+.prose h2 {
+  margin-top: 2.6em;
+  margin-bottom: 0.7em;
+  font-size: 1.42em;
+  letter-spacing: 0.005em;
+}
+
+.prose h3 {
+  margin-top: 2em;
+  margin-bottom: 0.55em;
+  font-size: 1.16em;
+}
+
+.prose h4 {
+  margin-top: 1.7em;
+  margin-bottom: 0.45em;
+  font-size: 1.02em;
+  color: var(--color-text-soft);
+}
+
+.prose h2 + *,
+.prose h3 + *,
+.prose h4 + * {
+  margin-top: 0;
+}
+
+/* ---------- 链接 ---------- */
+.prose a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 0.9px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
+  transition:
+    color var(--dur) var(--ease),
+    text-decoration-color var(--dur) var(--ease);
+}
+
+.prose a:hover {
+  color: var(--color-accent-hover);
+  text-decoration-color: currentColor;
+}
+
+.prose strong {
+  font-weight: 650;
+  color: var(--color-text);
+}
+
+.prose em {
+  font-style: normal;
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-thickness: 0.12em;
+  text-decoration-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
+  text-underline-offset: 0.22em;
+}
+
+.prose del {
+  color: var(--color-faint);
+}
+
+/* ---------- 列表 ---------- */
+.prose ul,
+.prose ol {
+  padding-left: 1.35em;
+}
+
+.prose ul {
+  list-style: none;
+  padding-left: 1.15em;
+}
+
+.prose ul > li {
+  position: relative;
+}
+
+.prose ul > li::before {
+  content: "";
+  position: absolute;
+  left: -0.95em;
+  top: 0.72em;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  opacity: 0.7;
+}
+
+.prose ol {
+  list-style: decimal;
+}
+
+.prose ol > li::marker {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  color: var(--color-faint);
+}
+
+.prose li + li {
+  margin-top: 0.4em;
+}
+
+.prose li > ul,
+.prose li > ol {
+  margin-top: 0.35em;
+}
+
+.prose li > p {
+  margin-top: 0.4em;
+}
+
+/* ---------- 引用与提示框 ---------- */
+.prose blockquote {
+  padding: 0.15em 0 0.15em 1.15em;
+  border-left: 2px solid var(--color-border-strong);
+  color: var(--color-muted);
+}
+
+.prose blockquote > * + * {
+  margin-top: 0.7em;
+}
+
+.prose blockquote p:first-child {
+  margin-top: 0;
+}
+
+/* 提示框：由 rehype-callouts 在构建期生成，见 src/plugins/ */
+.prose .callout {
+  position: relative;
+  margin-top: 1.5em;
+  padding: 0.9em 1.1em 0.9em 1.1em;
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--callout-color, var(--color-accent));
+  border-radius: var(--radius-md);
+  background-color: var(--callout-bg, var(--color-surface));
+  color: var(--color-text-soft);
+  font-size: 0.97em;
+}
+
+.prose .callout > * + * {
+  margin-top: 0.6em;
+}
+
+.prose .callout__title {
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.94em;
+  letter-spacing: 0.04em;
+  color: var(--callout-color, var(--color-accent));
+}
+
+.prose .callout__icon {
+  width: 15px;
+  height: 15px;
+  flex: none;
+}
+
+.prose .callout p {
+  margin: 0;
+}
+
+.prose .callout--note {
+  --callout-color: #2f6f9e;
+  --callout-bg: rgb(47 111 158 / 0.05);
+}
+
+.prose .callout--tip {
+  --callout-color: #2f7a55;
+  --callout-bg: rgb(47 122 85 / 0.05);
+}
+
+.prose .callout--important {
+  --callout-color: #8a5a12;
+  --callout-bg: rgb(138 90 18 / 0.06);
+}
+
+.prose .callout--warning,
+.prose .callout--caution {
+  --callout-color: #a4482a;
+  --callout-bg: rgb(164 72 42 / 0.06);
+}
+
+[data-theme="dark"] .prose .callout--note {
+  --callout-color: #7cb6e0;
+  --callout-bg: rgb(124 182 224 / 0.08);
+}
+
+[data-theme="dark"] .prose .callout--tip {
+  --callout-color: #7fc9a0;
+  --callout-bg: rgb(127 201 160 / 0.08);
+}
+
+[data-theme="dark"] .prose .callout--important {
+  --callout-color: #e0b871;
+  --callout-bg: rgb(224 184 113 / 0.09);
+}
+
+[data-theme="dark"] .prose .callout--warning,
+[data-theme="dark"] .prose .callout--caution {
+  --callout-color: #e79b7d;
+  --callout-bg: rgb(231 155 125 / 0.09);
+}
+
+/* ---------- 行内代码 ---------- */
+.prose :not(pre) > code {
+  padding: 0.1em 0.36em;
+  border: var(--border-hair);
+  border-radius: 4px;
+  background-color: var(--color-surface);
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+/* ---------- 代码块 ---------- */
+.prose .code-block {
+  margin-top: 1.6em;
+  border: 1px solid var(--color-code-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-code-bg);
+  overflow: hidden;
+}
+
+.prose .code-block__head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.5rem 0.45rem 0.9rem;
+  border-bottom: 1px solid var(--color-code-border);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--color-faint);
+  background-color: var(--color-surface);
+}
+
+.prose .code-block__title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+.prose .code-block__lang {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.68rem;
+  opacity: 0.75;
+}
+
+.prose .code-copy {
+  display: none;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.18rem 0.45rem;
+  border: 1px solid var(--color-code-border);
+  border-radius: 4px;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  color: var(--color-muted);
+  background-color: var(--color-bg-elevated);
+  transition:
+    color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+
+.js .prose .code-copy {
+  display: inline-flex;
+}
+
+.prose .code-copy:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.prose .code-copy svg {
+  width: 12px;
+  height: 12px;
+}
+
+.prose pre {
+  margin: 0;
+  padding: 0.95rem 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  font-family: var(--font-mono);
+  font-size: 0.855rem;
+  line-height: 1.72;
+  -webkit-overflow-scrolling: touch;
+  background-color: transparent !important;
+}
+
+.prose pre code {
+  display: block;
+  min-width: max-content;
+  padding-inline: 1.05rem;
+  font-family: inherit;
+  font-size: inherit;
+  background: transparent;
+  border: 0;
+}
+
+/* 行号（可选，由 .with-line-numbers 控制） */
+.prose pre.has-line-numbers code {
+  counter-reset: line;
+}
+
+.prose pre.has-line-numbers .line::before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  width: 2.1em;
+  margin-right: 1.1em;
+  text-align: right;
+  color: var(--color-faint);
+  opacity: 0.55;
+  user-select: none;
+}
+
+/* Shiki 双主题：由 astro 生成 --shiki-light / --shiki-dark 变量 */
+.prose .astro-code,
+.prose .astro-code span {
+  color: var(--shiki-light);
+  background-color: transparent;
+}
+
+.prose .astro-code {
+  background-color: var(--color-code-bg) !important;
+}
+
+[data-theme="dark"] .prose .astro-code,
+[data-theme="dark"] .prose .astro-code span {
+  color: var(--shiki-dark);
+}
+
+/* ---------- 表格 ---------- */
+.prose .table-wrap {
+  margin-top: 1.6em;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  border: var(--border-hair);
+  border-radius: var(--radius-md);
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.93em;
+  line-height: 1.6;
+}
+
+.prose thead th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  white-space: nowrap;
+}
+
+.prose th,
+.prose td {
+  padding: 0.6em 0.9em;
+  border-bottom: var(--border-hair);
+  vertical-align: top;
+}
+
+.prose tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.prose tbody tr:hover {
+  background-color: var(--color-surface);
+}
+
+/* ---------- 图片 ---------- */
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border: var(--border-hair);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+}
+
+.prose figure {
+  margin-top: 1.8em;
+}
+
+.prose figcaption {
+  margin-top: 0.6em;
+  font-size: var(--text-sm);
+  color: var(--color-faint);
+  text-align: center;
+}
+
+.prose [data-zoomable] {
+  cursor: zoom-in;
+}
+
+/* ---------- 分隔线 ---------- */
+.prose hr {
+  margin-block: 3em;
+  border: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--color-border-strong),
+    transparent
+  );
+}
+
+/* ---------- 脚注 ---------- */
+.prose .footnotes {
+  margin-top: 3.5em;
+  padding-top: 1.4em;
+  border-top: var(--border-hair);
+  font-size: 0.88em;
+  color: var(--color-muted);
+}
+
+.prose .footnotes h2 {
+  margin: 0 0 0.6em;
+  font-size: 0.78em;
+  letter-spacing: 0.12em;
+  color: var(--color-faint);
+}
+
+.prose .footnotes ol {
+  padding-left: 1.2em;
+}
+
+.prose .footnote-ref a {
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+  padding: 0 0.15em;
+}
+
+.prose .data-footnote-backref {
+  text-decoration: none;
+  margin-left: 0.3em;
+}
+
+.prose sup {
+  line-height: 0;
+}
+
+/* ---------- 其他行内元素 ---------- */
+.prose kbd {
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+  padding: 0.1em 0.4em;
+  border: 1px solid var(--color-border-strong);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background-color: var(--color-bg-elevated);
+}
+
+.prose mark {
+  background-color: var(--color-mark-bg);
+  color: inherit;
+  padding: 0 0.15em;
+  border-radius: 2px;
+}
+
+.prose details {
+  margin-top: 1.5em;
+  padding: 0.8em 1em;
+  border: var(--border-hair);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+}
+
+.prose summary {
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.prose details[open] summary {
+  margin-bottom: 0.6em;
+}
+
+/* 首字下沉（仅在长文首段，可选） */
+.prose--lede > p:first-of-type {
+  font-size: 1.06em;
+  color: var(--color-text);
+}
+
+/* ---------- 移动端微调 ---------- */
+@media (max-width: 640px) {
+  .prose {
+    font-size: 1rem;
+  }
+
+  .prose h2 {
+    margin-top: 2.2em;
+    font-size: 1.3em;
+  }
+
+  .prose h3 {
+    font-size: 1.12em;
+  }
+
+  .prose pre {
+    font-size: 0.8rem;
+    border-radius: 0;
+  }
+}

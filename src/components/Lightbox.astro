@@ -1,0 +1,38 @@
+<div class="lightbox" data-lightbox role="dialog" aria-modal="true" aria-label="图片预览 / Image preview">
+  <div class="lightbox__backdrop" data-lightbox-backdrop></div>
+
+  <div class="lightbox__bar">
+    <span class="lightbox__counter" data-lightbox-counter></span>
+    <button type="button" data-lightbox-close aria-label="关闭 / Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+        <path d="M6 6l12 12M18 6 6 18"></path>
+      </svg>
+    </button>
+  </div>
+
+  <button
+    type="button"
+    class="lightbox__nav lightbox__nav--prev"
+    data-lightbox-prev
+    aria-label="上一张 / Previous image"
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="m14 6-6 6 6 6"></path>
+    </svg>
+  </button>
+
+  <img class="lightbox__img" data-lightbox-img alt="" decoding="async" />
+
+  <button
+    type="button"
+    class="lightbox__nav lightbox__nav--next"
+    data-lightbox-next
+    aria-label="下一张 / Next image"
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="m10 6 6 6-6 6"></path>
+    </svg>
+  </button>
+
+  <p class="lightbox__caption" data-lightbox-caption hidden></p>
+</div>

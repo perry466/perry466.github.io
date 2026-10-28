@@ -1,0 +1,94 @@
+---
+import PageHead from "../components/PageHead.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { site } from "../site.config";
+import { breadcrumbJsonLd, pageTitle } from "../utils/seo";
+---
+
+<BaseLayout
+  title={pageTitle({ title: "关于" })}
+  titleEn={pageTitle({ title: "About" })}
+  description="关于页面示例：用于展示长文排版，正文为占位文案，请替换成你自己的介绍。"
+  descriptionEn="Sample about page showing long-form layout. Placeholder copy — replace with your own."
+  path="/about/"
+  jsonLd={breadcrumbJsonLd([
+    { name: "首页", path: "/" },
+    { name: "关于", path: "/about/" },
+  ])}
+>
+  <div class="container">
+    <PageHead
+      titleZh="关于"
+      titleEn="About"
+      metaZh={site.startYear ? `始于 ${site.startYear}` : undefined}
+      metaEn={site.startYear ? `Since ${site.startYear}` : undefined}
+    />
+
+    <div class="prose page-prose lang-zh">
+      <p>
+        这里写一段自我介绍。示例文案只用来验证排版：首段、列表、表格、小节标题在正文宽度下的表现是否符合预期。
+      </p>
+
+      <h2>现在在做</h2>
+      <ul>
+        <li>第一条：写你正在做的事。</li>
+        <li>第二条：写你在维护的项目。</li>
+        <li>第三条：写你最近在学的东西。</li>
+      </ul>
+
+      <h2>关注方向</h2>
+      <table>
+        <thead>
+          <tr><th>方向</th><th>具体内容</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>方向一</td><td>替换成你自己的描述</td></tr>
+          <tr><td>方向二</td><td>替换成你自己的描述</td></tr>
+          <tr><td>方向三</td><td>替换成你自己的描述</td></tr>
+        </tbody>
+      </table>
+
+      <h2>关于这个站点</h2>
+      <p>
+        静态生成，没有数据库，也没有自建后端。内容写在 Markdown 里，push 即发布；评论与统计默认关闭，页面不加载多余脚本。
+      </p>
+      <p>
+        联系方式可以写在这里，也可以把右上角的社交链接改成自己的。
+      </p>
+    </div>
+
+    <div class="prose page-prose lang-en">
+      <p>
+        Your introduction goes here. This placeholder copy exists only to check how the first
+        paragraph, lists, tables and section headings look at the default content width.
+      </p>
+
+      <h2>Currently</h2>
+      <ul>
+        <li>What you're working on.</li>
+        <li>What you maintain.</li>
+        <li>What you're learning.</li>
+      </ul>
+
+      <h2>Focus</h2>
+      <table>
+        <thead>
+          <tr><th>Area</th><th>Details</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Area one</td><td>Replace with your own description</td></tr>
+          <tr><td>Area two</td><td>Replace with your own description</td></tr>
+          <tr><td>Area three</td><td>Replace with your own description</td></tr>
+        </tbody>
+      </table>
+
+      <h2>About this site</h2>
+      <p>
+        Statically generated. No database, no custom backend. Content lives in Markdown; pushing
+        publishes. Comments and analytics are off by default, and no unnecessary scripts are
+        loaded.
+      </p>
+      <p>Put your contact details here, or point the social links at your own accounts.</p>
+    </div>
+  </div>
+</BaseLayout>

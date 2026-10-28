@@ -1,0 +1,74 @@
+---
+/**
+ * 搜索面板：结构在构建期输出，索引在浏览器端按需加载。
+ * 未构建索引（astro dev）时显示提示，不白屏、不阻塞正文。
+ */
+import T from "./T.astro";
+---
+
+<div class="search-root" data-search-root>
+  <div class="search-root__backdrop" data-search-close></div>
+  <div
+    class="search-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-label="搜索 / Search"
+    aria-describedby="search-hint"
+  >
+    <div class="search-panel__field">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="6.5"></circle>
+        <path d="m16 16 4.5 4.5"></path>
+      </svg>
+      <label class="visually-hidden" for="search-input">
+        <T k="search.label" />
+      </label>
+      <input
+        id="search-input"
+        class="search-panel__input"
+        type="search"
+        data-search-input
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+        role="combobox"
+        aria-expanded="true"
+        aria-controls="search-results"
+        aria-autocomplete="list"
+        placeholder="搜索文章标题或正文…"
+        data-placeholder-zh="搜索文章标题或正文…"
+        data-placeholder-en="Search titles and full text…"
+      />
+      <button type="button" class="search-panel__esc" data-search-close aria-label="关闭搜索 / Close search">
+        Esc
+      </button>
+    </div>
+
+    <div class="search-panel__status" data-search-status hidden></div>
+
+    <div class="search-panel__body" data-search-body>
+      <p class="search-panel__hint" id="search-hint" data-search-hint>
+        <span class="t-zh">输入关键词开始搜索，支持标题与正文。</span>
+        <span class="t-en">Start typing to search titles and full text.</span>
+      </p>
+      <ul
+        class="search-results"
+        id="search-results"
+        data-search-results
+        role="listbox"
+        aria-label="搜索结果 / Results"
+      ></ul>
+    </div>
+
+    <div class="search-panel__foot">
+      <span><kbd>↑</kbd><kbd>↓</kbd><span class="t-zh">选择</span><span class="t-en">Select</span></span>
+      <span><kbd>↵</kbd><span class="t-zh">跳转</span><span class="t-en">Go</span></span>
+      <span><kbd>Esc</kbd><span class="t-zh">关闭</span><span class="t-en">Close</span></span>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { initSearch } from "../scripts/search";
+  initSearch();
+</script>

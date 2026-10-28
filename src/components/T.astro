@@ -1,0 +1,21 @@
+---
+/**
+ * 双语文本。两端都输出，由 CSS 依据 <html data-locale> 显示其中一份，
+ * 因此无需 JS 即可保证中文默认可见、无闪白、无空白页。
+ */
+import { ui, type UIKey } from "../i18n/ui";
+
+interface Props {
+  k: UIKey;
+  vars?: Record<string, string | number>;
+}
+
+const { k, vars } = Astro.props;
+
+const fill = (value: string): string =>
+  vars
+    ? value.replace(/\{(\w+)\}/g, (match, name: string) =>
+        name in vars ? String(vars[name]) : match,
+      )
+    : value;
+---<span class="t-zh">{fill(ui.zh[k])}</span><span class="t-en">{fill(ui.en[k])}</span>

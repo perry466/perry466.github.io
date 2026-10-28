@@ -1,0 +1,64 @@
+---
+import PageHead from "../components/PageHead.astro";
+import T from "../components/T.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { formatISO, toDateTime } from "../utils/format";
+import { getAllPosts, groupByYear, postSlug } from "../utils/posts";
+import { tf } from "../i18n/ui";
+import { breadcrumbJsonLd, pageTitle } from "../utils/seo";
+
+const posts = await getAllPosts();
+const groups = groupByYear(posts);
+---
+
+<BaseLayout
+  title={pageTitle({ title: "归档" })}
+  titleEn={pageTitle({ title: "Archive" })}
+  description="按年月浏览全部文章。"
+  descriptionEn="Browse every post by year and month."
+  path="/archive/"
+  jsonLd={breadcrumbJsonLd([
+    { name: "首页", path: "/" },
+    { name: "归档", path: "/archive/" },
+  ])}
+>
+  <div class="container">
+    <PageHead
+      titleZh="归档"
+      titleEn="Archive"
+      descZh="按年月浏览全部文章。"
+      descEn="Browse every post by year and month."
+      metaZh={tf("zh", "list.total", { n: posts.length })}
+      metaEn={tf("en", "list.total", { n: posts.length })}
+    />
+
+    {
+      groups.length > 0 ? (
+        groups.map((group) => (
+          <section class="archive-group">
+            <h2 class="archive-group__title">
+              {group.year}
+              <span class="archive-group__count">
+                <T k="archive.count" vars={{ n: group.posts.length }} />
+              </span>
+            </h2>
+            <ul class="archive-list">
+              {group.posts.map((post) => (
+                <li>
+                  <time datetime={toDateTime(post.data.pubDate)}>{formatISO(post.data.pubDate).slice(5)}</time>
+                  <a href={`/posts/${postSlug(post)}/`}>{post.data.title}</a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      ) : (
+        <div class="empty-state">
+          <p>
+            <T k="list.empty" />
+          </p>
+        </div>
+      )
+    }
+  </div>
+</BaseLayout>

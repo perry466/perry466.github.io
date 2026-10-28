@@ -1,0 +1,88 @@
+---
+/**
+ * Giscus 评论：仅在 features.comments 开启且四项配置齐全时输出评论区与脚本，
+ * 关闭时页面不产生任何第三方请求。脚本进入视口后才注入。
+ */
+import T from "./T.astro";
+import { site } from "../site.config";
+
+const { repo, repoId, category, categoryId } = site.giscus;
+const enabled = site.features.comments && Boolean(repo && repoId && category && categoryId);
+---
+
+{
+  enabled ? (
+    <section
+      class="article-foot__section comments"
+      data-giscus
+      data-repo={repo}
+      data-repo-id={repoId}
+      data-category={category}
+      data-category-id={categoryId}
+    >
+      <h2 class="article-foot__heading">
+        <T k="post.comments" />
+      </h2>
+      <div class="comments__host" data-giscus-host>
+        <p class="comments__placeholder">
+          <span class="t-zh">评论加载中…</span>
+          <span class="t-en">Loading comments…</span>
+        </p>
+      </div>
+    </section>
+  ) : null
+}
+
+<script is:inline>
+  (function () {
+    var section = document.querySelector("[data-giscus]");
+    if (!section) return;
+    var host = section.querySelector("[data-giscus-host]");
+    var loaded = false;
+
+    function load() {
+      if (loaded || !host) return;
+      loaded = true;
+      host.innerHTML = "";
+      var script = document.createElement("script");
+      script.src = "https://giscus.app/client.js";
+      script.async = true;
+      script.crossOrigin = "anonymous";
+      var attrs = {
+        "data-repo": section.dataset.repo,
+        "data-repo-id": section.dataset.repoId,
+        "data-category": section.dataset.category,
+        "data-category-id": section.dataset.categoryId,
+        "data-mapping": "pathname",
+        "data-strict": "0",
+        "data-reactions-enabled": "1",
+        "data-emit-metadata": "0",
+        "data-input-position": "top",
+        "data-theme": document.documentElement.dataset.theme === "dark" ? "dark" : "light",
+        "data-lang": document.documentElement.dataset.locale === "en" ? "en" : "zh-CN",
+        "data-loading": "lazy",
+      };
+      Object.keys(attrs).forEach(function (key) {
+        script.setAttribute(key, attrs[key]);
+      });
+      host.appendChild(script);
+    }
+
+    if ("IntersectionObserver" in window) {
+      var observer = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              observer.disconnect();
+              load();
+            }
+          });
+        },
+        { rootMargin: "300px 0px" },
+      );
+      observer.observe(section);
+    } else {
+      load();
+    }
+  })();
+</script>

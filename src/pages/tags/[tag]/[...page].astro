@@ -1,0 +1,102 @@
+---
+import PageHead from "../../../components/PageHead.astro";
+import Pagination from "../../../components/Pagination.astro";
+import PostList from "../../../components/PostList.astro";
+import T from "../../../components/T.astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { site } from "../../../site.config";
+import {
+  collectTags,
+  getAllPosts,
+  paginate,
+  postTags,
+  totalPages,
+  type Post,
+  type TagSummary,
+} from "../../../utils/posts";
+import { tf } from "../../../i18n/ui";
+import { breadcrumbJsonLd, pageTitle } from "../../../utils/seo";
+
+interface Props {
+  tag: TagSummary;
+  page: number;
+  lastPage: number;
+  total: number;
+  posts: Post[];
+}
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+  const tags = collectTags(posts);
+  const paths: { params: { tag: string; page: string | undefined }; props: Props }[] = [];
+
+  for (const tag of tags) {
+    const list = posts.filter((post) => postTags(post).some((item) => item.slug === tag.slug));
+    const lastPage = totalPages(list.length, site.postsPerPage);
+    for (let page = 1; page <= lastPage; page += 1) {
+      paths.push({
+        params: { tag: tag.slug, page: page === 1 ? undefined : String(page) },
+        props: {
+          tag,
+          page,
+          lastPage,
+          total: list.length,
+          posts: paginate(list, site.postsPerPage, page),
+        },
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { tag, page, lastPage, total, posts } = Astro.props as Props;
+const base = `/tags/${tag.slug}`;
+---
+
+<BaseLayout
+  title={pageTitle({ title: `${tag.name} · 标签` })}
+  titleEn={pageTitle({ title: `${tag.name} · Tags` })}
+  description={`标签 ${tag.name} 下的全部文章，共 ${total} 篇。`}
+  descriptionEn={`All posts tagged ${tag.name}.`}
+  path={page === 1 ? `${base}/` : `${base}/${page}/`}
+  noindex={page > 1}
+  jsonLd={breadcrumbJsonLd([
+    { name: "首页", path: "/" },
+    { name: "标签", path: "/tags/" },
+    { name: tag.name, path: `${base}/` },
+  ])}
+>
+  <div class="container">
+    <PageHead
+      titleZh={tag.name}
+      titleEn={tag.name}
+      descZh={`该标签下的全部文章，共 ${total} 篇。`}
+      descEn={`All posts tagged “${tag.name}”.`}
+      metaZh={tf("zh", "list.total", { n: total })}
+      metaEn={tf("en", "list.total", { n: total })}
+    />
+
+    <ul class="tag-cloud" style="margin-bottom: var(--space-8)">
+      <li>
+        <a class="chip" href="/tags/">
+          ← <T k="tags.backToList" />
+        </a>
+      </li>
+    </ul>
+
+    {
+      posts.length > 0 ? (
+        <PostList posts={posts} style={site.ui.postListStyle} />
+      ) : (
+        <div class="empty-state">
+          <p>
+            <T k="list.empty" />
+          </p>
+        </div>
+      )
+    }
+
+    <Pagination current={page} last={lastPage} base={base} />
+  </div>
+</BaseLayout>

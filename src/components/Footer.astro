@@ -1,0 +1,42 @@
+---
+import { site } from "../site.config";
+import T from "./T.astro";
+
+const year = new Date().getFullYear();
+const range = site.startYear < year ? `${site.startYear}–${year}` : String(year);
+---
+
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <div class="site-footer__meta">
+      <span>© {range}</span>
+      <span class="t-zh">{site.name}</span><span class="t-en">{site.nameEn}</span>
+      <span class="dot-sep">·</span>
+      <a href={site.copyrightUrl} rel="noopener noreferrer" target="_blank">{site.copyright}</a>
+      {
+        site.icp ? (
+          <>
+            <span class="dot-sep">·</span>
+            <a href="https://beian.miit.gov.cn/" rel="noopener noreferrer" target="_blank">
+              {site.icp}
+            </a>
+          </>
+        ) : null
+      }
+    </div>
+
+    <div class="site-footer__links">
+      <a href="/rss.xml">RSS</a>
+      {
+        site.social
+          .filter((item) => item.href.startsWith("http"))
+          .map((item) => (
+            <a href={item.href} rel="noopener noreferrer" target="_blank">
+              {item.label}
+            </a>
+          ))
+      }
+      <a href="/privacy/"><T k="footer.privacy" /></a>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,94 @@
+---
+/**
+ * 统一输出 title / description / canonical / OG / Twitter / JSON-LD。
+ * 标题与描述同时输出中英两份：默认渲染主语言，切换到英文时由客户端脚本替换 document.title。
+ */
+import { site } from "../site.config";
+import { absoluteUrl, canonicalPath, defaultOgImage } from "../utils/seo";
+
+interface Props {
+  /** 主语言标题（不含站点名时由 withSiteName 控制） */
+  title: string;
+  titleEn?: string;
+  description: string;
+  descriptionEn?: string;
+  /** 规范路径，例如 /posts/hello/ */
+  path: string;
+  type?: "website" | "article";
+  lang?: "zh" | "en";
+  image?: string;
+  imageAlt?: string;
+  publishedTime?: string;
+  modifiedTime?: string;
+  author?: string;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  noindex?: boolean;
+}
+
+const {
+  title,
+  titleEn,
+  description,
+  descriptionEn,
+  path,
+  type = "website",
+  lang = "zh",
+  image,
+  imageAlt,
+  publishedTime,
+  modifiedTime,
+  author = site.author,
+  jsonLd,
+  noindex = false,
+} = Astro.props;
+
+const canonical = absoluteUrl(canonicalPath(path));
+const imageUrl = image ? absoluteUrl(image) : absoluteUrl(defaultOgImage);
+const altText = imageAlt ?? title;
+const primaryDescription = lang === "en" ? (descriptionEn ?? description) : description;
+const ogLocale = lang === "en" ? "en_US" : "zh_CN";
+const alternateLocale = lang === "en" ? "zh_CN" : "en_US";
+---
+
+<title data-title-zh={title} data-title-en={titleEn ?? title}>{title}</title>
+<meta name="description" content={primaryDescription} />
+<link rel="canonical" href={canonical} />
+{noindex ? <meta name="robots" content="noindex,follow" /> : null}
+
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={site.name} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={primaryDescription} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={imageUrl} />
+<meta property="og:image:alt" content={altText} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content={ogLocale} />
+<meta property="og:locale:alternate" content={alternateLocale} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={primaryDescription} />
+<meta name="twitter:image" content={imageUrl} />
+
+{
+  type === "article" ? (
+    <>
+      <meta property="article:published_time" content={publishedTime} />
+      {modifiedTime ? <meta property="article:modified_time" content={modifiedTime} /> : null}
+      <meta property="article:author" content={author} />
+    </>
+  ) : null
+}
+
+<link rel="alternate" type="application/rss+xml" title={`${site.name} RSS`} href={absoluteUrl("/rss.xml")} />
+
+{
+  jsonLd ? (
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(Array.isArray(jsonLd) ? jsonLd : [jsonLd])}
+    />
+  ) : null
+}

@@ -1,0 +1,36 @@
+---
+import T from "./T.astro";
+import PostMeta from "./PostMeta.astro";
+import { formatISO, toDateTime } from "../utils/format";
+import { postSlug, type Post } from "../utils/posts";
+
+interface Props {
+  post: Post;
+  /** 标题层级：首页/列表页用 h2，避免与页面 h1 冲突 */
+  headingLevel?: "h2" | "h3";
+}
+
+const { post, headingLevel = "h2" } = Astro.props;
+const Heading = headingLevel;
+const href = `/posts/${postSlug(post)}/`;
+---
+
+<li class="post-item" data-post-lang={post.data.lang}>
+  <div class="post-item__inner">
+    <div class="post-item__side">
+      <time datetime={toDateTime(post.data.pubDate)}>{formatISO(post.data.pubDate)}</time>
+    </div>
+    <div class="post-item__body">
+      <Heading class="post-item__title">
+        {post.data.pinned ? (
+          <span class="pin-badge">
+            <T k="home.pinned" />
+          </span>
+        ) : null}
+        <a href={href}>{post.data.title}</a>
+      </Heading>
+      <p class="post-item__desc">{post.data.description}</p>
+      <PostMeta post={post} variant="list" />
+    </div>
+  </div>
+</li>

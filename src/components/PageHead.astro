@@ -1,0 +1,32 @@
+---
+interface Props {
+  titleZh: string;
+  titleEn: string;
+  descZh?: string;
+  descEn?: string;
+  metaZh?: string;
+  metaEn?: string;
+}
+
+const { titleZh, titleEn, descZh, descEn, metaZh, metaEn } = Astro.props;
+---
+
+<header class="page-head">
+  <h1 class="page-head__title">
+    <span class="t-zh">{titleZh}</span><span class="t-en">{titleEn}</span>
+  </h1>
+  {
+    descZh ? (
+      <p class="page-head__desc">
+        <span class="t-zh">{descZh}</span><span class="t-en">{descEn ?? descZh}</span>
+      </p>
+    ) : null
+  }
+  {
+    metaZh ? (
+      <p class="page-head__meta">
+        <span class="t-zh">{metaZh}</span><span class="t-en">{metaEn ?? metaZh}</span>
+      </p>
+    ) : null
+  }
+</header>

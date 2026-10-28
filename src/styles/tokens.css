@@ -1,0 +1,129 @@
+/* ==========================================================================
+   设计令牌：全站唯一的设计值来源。
+   改颜色、字号、间距、圆角、页宽、菜单透明度，只改这里。
+
+   主题策略：
+   - 页面元素上只出现 data-theme="light" | "dark"（由 <head> 内联脚本解析）。
+   - 用户偏好 light | dark | system 存在 localStorage，system 由脚本解析，
+     因此 CSS 不需要重复维护第三套变量。
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* ---- 颜色：纸感暖白 + 印章红 ---- */
+  --color-bg: #fcfcfa;
+  --color-bg-elevated: #ffffff;
+  --color-surface: #f4f3ee;
+  --color-surface-2: #ecebe4;
+  --color-text: #1b1f24;
+  --color-text-soft: #39414a;
+  --color-muted: #525c68;
+  --color-faint: #6f7883;
+  --color-border: #e4e3dc;
+  --color-border-strong: #d2d1c8;
+  --color-accent: #9e3b2b;
+  --color-accent-hover: #7d2c1f;
+  --color-accent-soft: rgb(158 59 43 / 0.07);
+  --color-accent-ring: rgb(158 59 43 / 0.28);
+  --color-code-bg: #f7f6f2;
+  --color-code-border: #e6e4dc;
+  --color-selection: rgb(158 59 43 / 0.16);
+  --color-overlay: rgb(24 22 20 / 0.42);
+  --color-mark-bg: rgb(214 168 60 / 0.3);
+
+  /* ---- 字体：只用系统字体栈，不加载中文 Web 字体 ---- */
+  --font-sans: system-ui, -apple-system, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans SC", sans-serif;
+  --font-serif: "Songti SC", "Noto Serif SC", "Source Han Serif SC", "SimSun",
+    ui-serif, Georgia, serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+
+  /* ---- 字号阶梯 ---- */
+  --text-xs: 0.78rem;
+  --text-sm: 0.875rem;
+  --text-base: 1.0625rem; /* 17px 正文 */
+  --text-md: 1.175rem;
+  --text-lg: 1.3rem;
+  --text-xl: 1.55rem;
+  --text-2xl: 1.95rem;
+  --text-3xl: 2.5rem;
+  --text-4xl: 3.1rem;
+  --leading-tight: 1.22;
+  --leading-snug: 1.45;
+  --leading-base: 1.75;
+
+  /* ---- 间距 ---- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* ---- 布局 ---- */
+  --content-width: 72ch;
+  --container-width: 1120px;
+  --container-pad: clamp(1.25rem, 5vw, 2.5rem);
+  --header-height: 64px;
+  --toc-width: 208px;
+  --article-gap: 3.5rem;
+
+  /* ---- 形状 ---- */
+  --radius-sm: 6px;
+  --radius-md: 9px;
+  --radius-card: 12px;
+  --radius-pill: 999px;
+  --border-hair: 1px solid var(--color-border);
+
+  /* ---- 页头：透明度与毛玻璃在此调整 ---- */
+  --header-bg: 252 252 250; /* RGB 通道，便于与透明度组合 */
+  --header-opacity: 0.84; /* 0 全透明，1 不透明 */
+  --header-blur: 14px;
+
+  /* ---- 阴影 ---- */
+  --shadow-sm: 0 1px 2px rgb(20 25 30 / 0.05);
+  --shadow-md: 0 10px 28px -14px rgb(20 25 30 / 0.22);
+  --shadow-lg: 0 28px 70px -28px rgb(20 25 30 / 0.34);
+
+  /* ---- 动效 ---- */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur: 160ms;
+  --dur-slow: 260ms;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-bg: #14171a;
+  --color-bg-elevated: #1a1e22;
+  --color-surface: #1b1f24;
+  --color-surface-2: #23282e;
+  --color-text: #e7e5e0;
+  --color-text-soft: #d2d0cb;
+  --color-muted: #a6adb6;
+  --color-faint: #8b939c;
+  --color-border: #292e35;
+  --color-border-strong: #3a4048;
+  --color-accent: #e08a72;
+  --color-accent-hover: #f0a48e;
+  --color-accent-soft: rgb(224 138 114 / 0.1);
+  --color-accent-ring: rgb(224 138 114 / 0.3);
+  --color-code-bg: #191d22;
+  --color-code-border: #2b3138;
+  --color-selection: rgb(224 138 114 / 0.22);
+  --color-overlay: rgb(8 9 11 / 0.62);
+  --color-mark-bg: rgb(224 168 90 / 0.26);
+
+  --header-bg: 20 23 26;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
+  --shadow-md: 0 10px 28px -14px rgb(0 0 0 / 0.6);
+  --shadow-lg: 0 28px 70px -28px rgb(0 0 0 / 0.75);
+}

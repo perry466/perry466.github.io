@@ -1,0 +1,121 @@
+---
+import PageHead from "../components/PageHead.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { site } from "../site.config";
+import { breadcrumbJsonLd, pageTitle } from "../utils/seo";
+
+const commentsOn = site.features.comments && Boolean(site.giscus.repoId);
+const analyticsOn = site.features.analytics && Boolean(site.umami.websiteId);
+---
+
+<BaseLayout
+  title={pageTitle({ title: "隐私" })}
+  titleEn={pageTitle({ title: "Privacy" })}
+  description="这个站点收集什么、不收集什么，以及第三方服务的使用情况。"
+  descriptionEn="What this site collects, what it does not, and which third-party services are involved."
+  path="/privacy/"
+  jsonLd={breadcrumbJsonLd([
+    { name: "首页", path: "/" },
+    { name: "隐私", path: "/privacy/" },
+  ])}
+>
+  <div class="container">
+    <PageHead titleZh="隐私" titleEn="Privacy" />
+
+    <div class="prose page-prose lang-zh">
+      <p>这是一个纯静态站点，没有账号体系，也不要求你提交任何个人信息。以下是具体范围。</p>
+
+      <h2>托管日志</h2>
+      <p>
+        站点托管在 GitHub Pages。访问时 GitHub 会按其自身的隐私政策记录必要的请求信息（例如 IP 地址、User-Agent），用于分发与安全防护。这部分日志不由本站控制，本站也无法查看。
+      </p>
+
+      <h2>Cookie 与本地存储</h2>
+      <p>
+        本站不写任何用于追踪的 Cookie。仅在浏览器本地存储两项偏好：主题模式与界面语言，用于下次访问保持一致。清除浏览器数据即可删除。
+      </p>
+
+      <h2>{analyticsOn ? "统计" : "统计（当前关闭）"}</h2>
+      <p>
+        {
+          analyticsOn
+            ? "本站使用 Umami 统计访问量。它不写 Cookie、不采集个人身份信息，仅统计页面浏览量、来源与设备类别等聚合数据。"
+            : "本站当前未启用任何访问统计服务，页面不加载统计脚本。"
+        }
+      </p>
+
+      <h2>{commentsOn ? "评论" : "评论（当前关闭）"}</h2>
+      <p>
+        {
+          commentsOn
+            ? "文章页使用 Giscus 提供评论，评论内容保存在 GitHub Discussions。加载评论时会请求 giscus.app，发表评论需要登录 GitHub，届时你与 GitHub 之间适用其隐私政策。"
+            : "本站当前未启用评论功能，文章页不加载任何评论脚本。"
+        }
+      </p>
+
+      <h2>第三方资源</h2>
+      <p>
+        页面不加载第三方字体、图标库或广告脚本。图片随仓库一同托管，不经过第三方图床。
+      </p>
+
+      <h2>联系与删除</h2>
+      <p>
+        若你认为这里的内容有问题需要更正或删除，请通过
+        <a href="https://github.com/perry466" rel="noopener noreferrer" target="_blank">GitHub</a>
+        联系。涉及评论内容的删除，可直接在对应的 GitHub Discussion 中处理。
+      </p>
+    </div>
+
+    <div class="prose page-prose lang-en">
+      <p>
+        This is a fully static site. There are no accounts and no forms asking for personal
+        information. Here is the exact scope.
+      </p>
+
+      <h2>Hosting logs</h2>
+      <p>
+        The site is hosted on GitHub Pages. GitHub records the request information it needs for
+        delivery and abuse protection (such as IP address and User-Agent) under its own privacy
+        policy. Those logs are outside this site's control and are not accessible to me.
+      </p>
+
+      <h2>Cookies and local storage</h2>
+      <p>
+        No tracking cookies are set. Two preferences are stored locally in your browser — theme and
+        interface language — so the site stays consistent on your next visit. Clearing site data
+        removes them.
+      </p>
+
+      <h2>{analyticsOn ? "Analytics" : "Analytics (currently off)"}</h2>
+      <p>
+        {
+          analyticsOn
+            ? "Umami is used for aggregate traffic statistics. It sets no cookies and collects no personally identifying information — only page views, referrers and broad device categories."
+            : "No analytics service is enabled, and no analytics script is loaded."
+        }
+      </p>
+
+      <h2>{commentsOn ? "Comments" : "Comments (currently off)"}</h2>
+      <p>
+        {
+          commentsOn
+            ? "Comments are powered by Giscus and stored in GitHub Discussions. Loading them requests giscus.app; posting requires a GitHub login, at which point GitHub's privacy policy applies."
+            : "Comments are disabled, and no comment script is loaded on article pages."
+        }
+      </p>
+
+      <h2>Third-party assets</h2>
+      <p>
+        No third-party fonts, icon libraries or ad scripts. Images are served from the same
+        repository, not from an external image host.
+      </p>
+
+      <h2>Contact and removal</h2>
+      <p>
+        If something here needs correcting or removing, reach me on
+        <a href="https://github.com/perry466" rel="noopener noreferrer" target="_blank">GitHub</a>.
+        For comment removal, the corresponding GitHub Discussion is the right place.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

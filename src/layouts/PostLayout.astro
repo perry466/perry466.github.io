@@ -1,0 +1,217 @@
+---
+import { Image } from "astro:assets";
+import BaseLayout from "./BaseLayout.astro";
+import Giscus from "../components/Giscus.astro";
+import Lightbox from "../components/Lightbox.astro";
+import PostCard from "../components/PostCard.astro";
+import PostMeta from "../components/PostMeta.astro";
+import T from "../components/T.astro";
+import Toc from "../components/Toc.astro";
+import { site } from "../site.config";
+import { postPath } from "../utils/related";
+import { readingMinutes, tagSlug, type Post } from "../utils/posts";
+import { absoluteUrl, breadcrumbJsonLd, defaultOgImage, pageTitle } from "../utils/seo";
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  post: Post;
+  headings: Heading[];
+  previous: Post | null;
+  next: Post | null;
+  related: Post[];
+  translation: Post | null;
+  coverUrl?: string;
+}
+
+const { post, headings, previous, next, related, translation, coverUrl } = Astro.props;
+
+const { data } = post;
+const body = post.body ?? "";
+const minutes = readingMinutes(body);
+const year = data.pubDate.getFullYear();
+
+const zhTitle = pageTitle({ title: data.title });
+const enTitle = pageTitle({ title: translation?.data.title ?? data.title });
+
+const article = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: data.title,
+  description: data.description,
+  datePublished: data.pubDate.toISOString(),
+  dateModified: (data.updatedDate ?? data.pubDate).toISOString(),
+  author: { "@type": "Person", name: site.author, url: site.url },
+  publisher: { "@type": "Person", name: site.author },
+  image: [absoluteUrl(coverUrl ?? defaultOgImage)],
+  mainEntityOfPage: { "@type": "WebPage", "@id": absoluteUrl(postPath(post)) },
+  inLanguage: data.lang === "en" ? "en" : "zh-CN",
+  ...(data.tags.length > 0 ? { keywords: data.tags.join(", ") } : {}),
+  timeRequired: `PT${minutes}M`,
+  isPartOf: { "@type": "Blog", name: site.name, url: site.url },
+};
+
+const jsonLd = [
+  article,
+  breadcrumbJsonLd([
+    { name: "文章", path: "/posts/" },
+    { name: data.title, path: postPath(post) },
+  ]),
+];
+---
+
+<BaseLayout
+  title={zhTitle}
+  titleEn={enTitle}
+  description={data.description}
+  descriptionEn={translation?.data.description ?? data.description}
+  path={postPath(post)}
+  type="article"
+  lang={data.lang}
+  image={coverUrl}
+  imageAlt={data.coverAlt ?? data.title}
+  publishedTime={data.pubDate.toISOString()}
+  modifiedTime={data.updatedDate?.toISOString()}
+  jsonLd={jsonLd}
+  progress={true}
+>
+  <article class="container article-wrap">
+    <div class="article-shell">
+      <div class="article-main" data-pagefind-body data-pagefind-filter={`lang:${data.lang}`}>
+        <header class="article-head">
+          <h1 class="article-head__title" data-pagefind-meta="title">{data.title}</h1>
+          <p class="article-head__desc">{data.description}</p>
+          <PostMeta post={post} variant="article" />
+          {
+            data.tags.length > 0 ? (
+              <ul class="article-head__tags">
+                {data.tags.map((tag) => (
+                  <li>
+                    <a class="chip" href={`/tags/${tagSlug(tag)}/`}>
+                      {tag}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : null
+          }
+          {
+            data.cover ? (
+              <div class="article-head__cover">
+                <Image
+                  src={data.cover}
+                  alt={data.coverAlt ?? data.title}
+                  widths={[640, 960, 1280]}
+                  sizes="(min-width: 1024px) 720px, 100vw"
+                  loading="eager"
+                  fetchpriority="high"
+                />
+              </div>
+            ) : null
+          }
+        </header>
+
+        <Toc variant="inline" headings={headings} />
+
+        <div class="prose prose--lede" data-prose>
+          <slot />
+        </div>
+
+        <footer class="article-foot" data-pagefind-ignore>
+          <div class="inline-actions">
+            {
+              site.features.sharelink ? (
+                <button type="button" class="action-btn" data-copy-link>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M10 13a5 5 0 0 0 7.1 0l2.4-2.4a5 5 0 0 0-7.1-7.1L11 4.9" />
+                    <path d="M14 11a5 5 0 0 0-7.1 0L4.5 13.4a5 5 0 0 0 7.1 7.1l1.3-1.3" />
+                  </svg>
+                  <span data-label><T k="post.copyLink" /></span>
+                </button>
+              ) : null
+            }
+            {
+              translation ? (
+                <a class="action-btn" href={postPath(translation)} hreflang={translation.data.lang}>
+                  {translation.data.lang === "en" ? "Read in English" : "读中文"}
+                  <span aria-hidden="true">→</span>
+                </a>
+              ) : null
+            }
+            <button type="button" class="action-btn" data-to-top>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 19V5M5 12l7-7 7 7" />
+              </svg>
+              <T k="site.backToTop" />
+            </button>
+          </div>
+
+          <section class="article-foot__section">
+            <div class="license-note">
+              <span>© {year} {site.author}</span>
+              <span class="dot-sep"> · </span>
+              <span><T k="post.copyright" vars={{ license: site.copyright }} /></span>
+              <br />
+              <T k="post.credit" />
+            </div>
+          </section>
+
+          {
+            related.length > 0 ? (
+              <section class="article-foot__section">
+                <h2 class="article-foot__heading">
+                  <T k="post.related" />
+                </h2>
+                <ul class="post-list post-list--bordered">
+                  {related.map((item) => (
+                    <PostCard post={item} headingLevel="h3" />
+                  ))}
+                </ul>
+              </section>
+            ) : null
+          }
+
+          {
+            previous || next ? (
+              <nav class="article-foot__section prevnext" aria-label="上下篇 / Adjacent posts">
+                {previous ? (
+                  <a class="prevnext__item" href={postPath(previous)} rel="prev">
+                    <span class="prevnext__label">← <T k="post.prev" /></span>
+                    <span class="prevnext__title">{previous.data.title}</span>
+                  </a>
+                ) : (
+                  <span />
+                )}
+                {next ? (
+                  <a class="prevnext__item prevnext__item--next" href={postPath(next)} rel="next">
+                    <span class="prevnext__label"><T k="post.next" /> →</span>
+                    <span class="prevnext__title">{next.data.title}</span>
+                  </a>
+                ) : (
+                  <span />
+                )}
+              </nav>
+            ) : null
+          }
+
+          <Giscus />
+        </footer>
+      </div>
+
+      <Toc variant="aside" headings={headings} />
+    </div>
+  </article>
+
+  <Lightbox slot="overlays" />
+
+  <script>
+    import { initToc } from "../scripts/toc";
+    import { initLightbox } from "../scripts/lightbox";
+    initToc();
+    initLightbox();
+  </script>
+</BaseLayout>

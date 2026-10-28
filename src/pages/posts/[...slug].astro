@@ -1,0 +1,155 @@
+---
+/**
+ * /posts/ 与 /posts/{slug}/ 的共用路由。
+ *
+ * Astro 中「分页」和「文章」都位于 /posts/ 下的一级路径（/posts/2/、/posts/hello/），
+ * 两个动态路由会互相抢占匹配。因此这里由同一个 [...]slug 路由同时产出：
+ *   - 分页页（slug 为空或纯数字）
+ *   - 文章页（slug 为文章标识）
+ * 纯数字的文章 slug 会在构建期直接报错，避免与分页冲突。
+ */
+import { render } from "astro:content";
+import PageHead from "../../components/PageHead.astro";
+import Pagination from "../../components/Pagination.astro";
+import PostList from "../../components/PostList.astro";
+import T from "../../components/T.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostLayout from "../../layouts/PostLayout.astro";
+import { site } from "../../site.config";
+import {
+  getAllPosts,
+  getAdjacent,
+  paginate,
+  postSlug,
+  totalPages,
+  type Post,
+} from "../../utils/posts";
+import { relatedPosts, translationOf } from "../../utils/related";
+import { tf } from "../../i18n/ui";
+import { breadcrumbJsonLd, pageTitle } from "../../utils/seo";
+
+export type Props =
+  | { kind: "page"; page: number; lastPage: number; total: number; posts: Post[] }
+  | { kind: "post"; post: Post };
+
+export async function getStaticPaths() {
+  const all = await getAllPosts();
+  const lastPage = totalPages(all.length, site.postsPerPage);
+  const paths: { params: { slug: string | undefined }; props: Props }[] = [];
+
+  for (let page = 1; page <= lastPage; page += 1) {
+    paths.push({
+      params: { slug: page === 1 ? undefined : String(page) },
+      props: {
+        kind: "page",
+        page,
+        lastPage,
+        total: all.length,
+        posts: paginate(all, site.postsPerPage, page),
+      },
+    });
+  }
+
+  for (const post of all) {
+    const slug = postSlug(post);
+    if (/^\d+$/.test(slug)) {
+      throw new Error(`文章 slug 不能是纯数字，会与 /posts/ 分页路由冲突：${post.id}`);
+    }
+    paths.push({ params: { slug }, props: { kind: "post", post } });
+  }
+
+  return paths;
+}
+
+const props = Astro.props as Props;
+const isPost = props.kind === "post";
+const post = isPost ? (props as Extract<Props, { kind: "post" }>).post : null;
+const rendered = post ? await render(post) : null;
+const Content = rendered?.Content;
+
+const all = await getAllPosts();
+const sameLang = post ? all.filter((item) => item.data.lang === post.data.lang) : [];
+const adjacent = post ? getAdjacent(sameLang, post) : { previous: null, next: null };
+const related = post ? relatedPosts(post, all) : [];
+const translation = post ? translationOf(post, all) : null;
+const coverUrl = post?.data.cover ? post.data.cover.src : undefined;
+
+const pageData = props.kind === "page" ? props : null;
+---
+
+{
+  post && Content ? (
+    <PostLayout
+      post={post}
+      headings={rendered?.headings ?? []}
+      previous={adjacent.previous}
+      next={adjacent.next}
+      related={related}
+      translation={translation}
+      coverUrl={coverUrl}
+    >
+      <Content />
+    </PostLayout>
+  ) : pageData ? (
+    <BaseLayout
+      title={pageTitle({ title: "文章" })}
+      titleEn={pageTitle({ title: "Posts" })}
+      description="按时间倒序排列的全部文章。"
+      descriptionEn="Everything published so far, newest first."
+      path={pageData.page === 1 ? "/posts/" : `/posts/${pageData.page}/`}
+      noindex={pageData.page > 1}
+      jsonLd={breadcrumbJsonLd([
+        { name: "首页", path: "/" },
+        { name: "文章", path: "/posts/" },
+      ])}
+    >
+      <div class="container">
+        <PageHead
+          titleZh="文章"
+          titleEn="Posts"
+          descZh="按时间倒序排列的全部文章。"
+          descEn="Everything published so far, newest first."
+          metaZh={tf("zh", "list.total", { n: pageData.total })}
+          metaEn={tf("en", "list.total", { n: pageData.total })}
+        />
+
+        {pageData.posts.length > 0 ? (
+          <PostList posts={pageData.posts} style={site.ui.postListStyle} />
+        ) : (
+          <div class="empty-state">
+            <p>
+              <T k="list.empty" />
+            </p>
+          </div>
+        )}
+
+        <p class="empty-state" data-lang-empty hidden>
+          <T k="list.emptyFiltered" />
+          <a class="text-link" href="/posts/">
+            <T k="list.emptyLink" />
+          </a>
+        </p>
+
+        <Pagination current={pageData.page} last={pageData.lastPage} base="/posts" />
+      </div>
+    </BaseLayout>
+  ) : null
+}
+
+<script>
+  // 语言过滤是纯 CSS 完成的；分页页在过滤后可能为空，这里给出提示而不是留白。
+  const hint = document.querySelector<HTMLElement>("[data-lang-empty]");
+  if (hint) {
+    const check = (): void => {
+      const visible = document.querySelectorAll(
+        ".post-list > [data-post-lang]:not([style*='display: none'])",
+      );
+      const anyVisible = Array.from(visible).some(
+        (node) => window.getComputedStyle(node).display !== "none",
+      );
+      hint.hidden = anyVisible;
+    };
+    check();
+    document.addEventListener("localechange", check);
+  }
+</script>
