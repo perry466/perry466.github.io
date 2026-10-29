@@ -44,12 +44,6 @@ export function formatMonth(month: string, locale: Locale): string {
   return `${Number(month)} 月`;
 }
 
-/** 列表左侧的「月-日」：10-28 */
-export function formatMonthDay(date: Date): string {
-  const { month, day } = zoned(date);
-  return `${pad(month)}-${pad(day)}`;
-}
-
 /** 文章页长日期 */
 export function formatLong(date: Date, locale: Locale): string {
   if (locale === "en") {

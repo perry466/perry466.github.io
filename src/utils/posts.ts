@@ -40,6 +40,21 @@ function fileMtime(entry: RawPost): Date | undefined {
 }
 
 /**
+ * 与 git-dates 对齐的键：内容目录之后的原始相对路径、去掉扩展名。
+ *
+ * 不能用 `entry.id` —— 它被 glob 加载器 slug 化过（空格→连字符、去标点），
+ * 与磁盘路径对不上，中文文件名会静默匹配失败、日期退回文件修改时间。
+ */
+function contentKey(entry: RawPost): string {
+  const path = entry.filePath ?? "";
+  if (!path) return entry.id;
+  return path
+    .replace(/\\/g, "/")
+    .replace(/^.*?src\/content\/posts\//, "")
+    .replace(/\.mdx?$/, "");
+}
+
+/**
  * 把 front matter、git 提交时间、文件时间合成为最终日期。
  *
  * 优先级：
@@ -51,7 +66,7 @@ function fileMtime(entry: RawPost): Date | undefined {
  */
 function resolveDates(entry: RawPost): Post {
   const raw = entry.data;
-  const commits = getCommitDates().get(entry.id);
+  const commits = getCommitDates().get(contentKey(entry));
   const pubDate = raw.pubDate ?? commits?.first ?? fileMtime(entry) ?? new Date();
   const updatedDate =
     raw.updatedDate ?? (commits && commits.count > 1 ? commits.last : undefined);

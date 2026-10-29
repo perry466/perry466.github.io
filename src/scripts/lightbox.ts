@@ -1,3 +1,22 @@
+import { lockBackground } from "./focus";
+
+/** 取 srcset 里最宽的那张：currentSrc 是按视口选中的缩略图，放大后会糊 */
+function largestSource(img: HTMLImageElement): string {
+  const srcset = img.getAttribute("srcset") ?? "";
+  let best = "";
+  let bestWidth = 0;
+  for (const part of srcset.split(",")) {
+    const [url, descriptor] = part.trim().split(/\s+/);
+    if (!url) continue;
+    const width = descriptor?.endsWith("w") ? Number.parseInt(descriptor, 10) : 0;
+    if (width > bestWidth) {
+      bestWidth = width;
+      best = url;
+    }
+  }
+  return best || img.currentSrc || img.src;
+}
+
 /** 正文图片灯箱：点击放大、左右切换、Esc 关闭。容器标记在 Lightbox.astro。 */
 export function initLightbox(): void {
   const root = document.querySelector<HTMLElement>("[data-lightbox]");
@@ -12,11 +31,12 @@ export function initLightbox(): void {
   const html = document.documentElement;
   let index = 0;
   let lastFocus: HTMLElement | null = null;
+  let releaseLock: (() => void) | null = null;
 
   const render = (): void => {
     const source = items[index];
     if (!source) return;
-    image.src = source.currentSrc || source.src;
+    image.src = largestSource(source);
     image.alt = source.alt;
     if (counter) counter.textContent = `${index + 1} / ${items.length}`;
     if (caption) {
@@ -31,6 +51,7 @@ export function initLightbox(): void {
     render();
     root.classList.add("is-open");
     html.classList.add("is-locked");
+    releaseLock = lockBackground(root);
     root.querySelector<HTMLElement>("button")?.focus();
   };
 
@@ -38,6 +59,8 @@ export function initLightbox(): void {
     if (!root.classList.contains("is-open")) return;
     root.classList.remove("is-open");
     html.classList.remove("is-locked");
+    releaseLock?.();
+    releaseLock = null;
     image.removeAttribute("src");
     (lastFocus ?? document.body).focus();
   };
@@ -49,7 +72,11 @@ export function initLightbox(): void {
   };
 
   items.forEach((item, itemIndex) => {
-    item.addEventListener("click", () => open(itemIndex));
+    item.addEventListener("click", (event) => {
+      // 图片被链接包住时（Markdown 的 [![alt](img)](url)），点击不该同时导航走
+      event.preventDefault();
+      open(itemIndex);
+    });
     item.setAttribute("tabindex", "0");
     item.setAttribute("role", "button");
     item.addEventListener("keydown", (event) => {

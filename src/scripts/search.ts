@@ -1,3 +1,4 @@
+import { lockBackground } from "./focus";
 import { onLocaleChange, s } from "./i18n-client";
 
 interface PagefindResultData {
@@ -99,6 +100,10 @@ export function initSearch(): void {
   let activeIndex = -1;
   let timer: number | undefined;
   let requestId = 0;
+  /** 中文/日文输入法选词期间不触发搜索，否则每敲一个候选都会闪一次结果 */
+  let composing = false;
+  /** 关闭时撤销背景 inert；null 表示当前没锁 */
+  let releaseLock: (() => void) | null = null;
 
   /** initial：恢复初始说明；hidden：隐藏；其余字符串：显示该提示 */
   const setHint = (mode: "initial" | "hidden" | string): void => {
@@ -123,6 +128,7 @@ export function initSearch(): void {
     lastFocus = document.activeElement as HTMLElement | null;
     root.classList.add("is-open");
     html.classList.add("is-locked");
+    releaseLock = lockBackground(root);
     input.focus();
     void loadPagefind().then((mod) => {
       if (!mod) setStatus(s("searchIndexMissing"));
@@ -133,6 +139,8 @@ export function initSearch(): void {
     if (!root.classList.contains("is-open")) return;
     root.classList.remove("is-open");
     html.classList.remove("is-locked");
+    releaseLock?.();
+    releaseLock = null;
     (lastFocus ?? input).focus();
   };
 
@@ -211,7 +219,17 @@ export function initSearch(): void {
     }
 
     // 不按界面语言过滤：列表与归档都同时展示中英文文章，搜索也保持一致
-    const search = await mod.search(query);
+    let search: Awaited<ReturnType<PagefindModule["search"]>>;
+    try {
+      search = await mod.search(query);
+    } catch {
+      // 索引损坏或版本不匹配：提示而不是抛未捕获异常
+      if (current !== requestId) return;
+      list.innerHTML = "";
+      setHint("hidden");
+      setStatus(s("searchIndexMissing"));
+      return;
+    }
     if (current !== requestId) return;
 
     const slice = search.results.slice(0, 10);
@@ -222,6 +240,7 @@ export function initSearch(): void {
   };
 
   input.addEventListener("input", () => {
+    if (composing) return;
     const query = input.value.trim();
     window.clearTimeout(timer);
 
@@ -240,7 +259,17 @@ export function initSearch(): void {
     }, 140);
   });
 
+  input.addEventListener("compositionstart", () => {
+    composing = true;
+  });
+  input.addEventListener("compositionend", () => {
+    composing = false;
+    input.dispatchEvent(new Event("input"));
+  });
+
   input.addEventListener("keydown", (event) => {
+    // 输入法组合期间的 Enter / 方向键是在选候选词，不能拿来选结果或跳转
+    if (composing || event.isComposing) return;
     if (event.key === "ArrowDown") {
       event.preventDefault();
       setActive(activeIndex + 1);

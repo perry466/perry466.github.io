@@ -18,6 +18,9 @@ interface Props {
   lang?: "zh" | "en";
   image?: string;
   imageAlt?: string;
+  /** 分享图实际尺寸：封面是任意比例，写死 1200×630 会与实际不符 */
+  imageWidth?: number;
+  imageHeight?: number;
   publishedTime?: string;
   modifiedTime?: string;
   author?: string;
@@ -35,6 +38,8 @@ const {
   lang = "zh",
   image,
   imageAlt,
+  imageWidth = 1200,
+  imageHeight = 630,
   publishedTime,
   modifiedTime,
   author,
@@ -65,8 +70,8 @@ const alternateLocale = lang === "en" ? "zh_CN" : "en_US";
 <meta property="og:url" content={canonical} />
 <meta property="og:image" content={imageUrl} />
 <meta property="og:image:alt" content={altText} />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
+<meta property="og:image:width" content={String(imageWidth)} />
+<meta property="og:image:height" content={String(imageHeight)} />
 <meta property="og:locale" content={ogLocale} />
 <meta property="og:locale:alternate" content={alternateLocale} />
 
@@ -91,7 +96,7 @@ const alternateLocale = lang === "en" ? "zh_CN" : "en_US";
   jsonLd ? (
     <script
       type="application/ld+json"
-      set:html={JSON.stringify(Array.isArray(jsonLd) ? jsonLd : [jsonLd])}
+      set:html={JSON.stringify(Array.isArray(jsonLd) ? jsonLd : [jsonLd]).replace(/</g, "\\u003c")}
     />
   ) : null
 }

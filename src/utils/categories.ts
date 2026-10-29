@@ -9,10 +9,8 @@ import type { Post } from "./posts";
 export type Category = CategoryItem;
 
 export interface CategorySummary extends CategoryItem {
-  /** 已发布文章数 */
+  /** 已发布文章数（导航与分类页都按它过滤空分类） */
   count: number;
-  /** 该分类下最新一篇的时间戳，用于空分类不出现在导航 */
-  latest: number;
 }
 
 function fallbackCategory(): Category {
@@ -44,14 +42,13 @@ export function collectCategories(
 ): CategorySummary[] {
   const map = new Map<string, CategorySummary>();
   for (const item of site.categories) {
-    map.set(item.slug, { ...item, count: 0, latest: 0 });
+    map.set(item.slug, { ...item, count: 0 });
   }
 
   for (const post of posts) {
     const entry = map.get(categoryOf(post).slug);
     if (!entry) continue;
     entry.count += 1;
-    entry.latest = Math.max(entry.latest, post.data.pubDate.getTime());
   }
 
   const list = [...map.values()];

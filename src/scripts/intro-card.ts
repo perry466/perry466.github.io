@@ -5,6 +5,8 @@
  * 鼠标悬停或用键盘聚焦时暂停计时——正在读的时候不该被收走。
  * 收起后写 sessionStorage，同一次会话里不再反复弹出。
  */
+import { readSession, writeSession } from "./storage";
+
 const DISMISS_KEY = "whitespace:intro-dismissed";
 const LEAVE_MS = 220;
 
@@ -14,7 +16,7 @@ export function initIntroCard(): void {
 
   const total = Number(card.dataset.introDuration ?? "0");
   if (!total) return;
-  if (sessionStorage.getItem(DISMISS_KEY) === "1") return;
+  if (readSession(DISMISS_KEY) === "1") return;
 
   const closeButton = card.querySelector<HTMLElement>("[data-intro-close]");
   const bar = card.querySelector<HTMLElement>("[data-intro-bar]");
@@ -32,7 +34,7 @@ export function initIntroCard(): void {
     if (dismissed) return;
     dismissed = true;
     clear();
-    if (remember) sessionStorage.setItem(DISMISS_KEY, "1");
+    if (remember) writeSession(DISMISS_KEY, "1");
     card.classList.remove("is-visible");
     card.classList.add("is-leaving");
     window.setTimeout(() => {

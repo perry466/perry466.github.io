@@ -22,6 +22,8 @@ interface Props {
   lang?: "zh" | "en";
   image?: string;
   imageAlt?: string;
+  imageWidth?: number;
+  imageHeight?: number;
   publishedTime?: string;
   modifiedTime?: string;
   author?: string;
@@ -41,6 +43,8 @@ const {
   lang = "zh",
   image,
   imageAlt,
+  imageWidth,
+  imageHeight,
   publishedTime,
   modifiedTime,
   author,
@@ -78,6 +82,8 @@ const showProgress = progress && site.ui.showReadingProgress;
       lang={lang}
       image={image}
       imageAlt={imageAlt}
+      imageWidth={imageWidth}
+      imageHeight={imageHeight}
       publishedTime={publishedTime}
       modifiedTime={modifiedTime}
       author={author}
@@ -122,7 +128,8 @@ const showProgress = progress && site.ui.showReadingProgress;
             locale = prefersEnglish && root.dataset.hasEn === "true" ? "en" : "zh";
           }
           root.dataset.locale = locale;
-          root.lang = locale === "en" ? "en" : "zh-CN";
+          // 不动 <html lang>：lang 表示正文语言，由模板按文章语言输出；
+          // 界面语言只用 data-locale 表达，否则英文正文会被标成 zh-CN（读屏发音与 SEO 都会错）
 
           var title = document.querySelector("title[data-title-zh]");
           if (title) {

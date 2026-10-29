@@ -12,7 +12,11 @@ export interface CommitDates {
 let cache: Map<string, CommitDates> | null = null;
 
 /**
- * 一次性读完整段 git 历史，得到每篇文章的提交时间（按文章 id 索引，如 `tech/css-grid-patterns`）。
+ * 一次性读完整段 git 历史，得到每篇文章的提交时间（按**文件相对路径**索引，如 `tech/css-grid-patterns`）。
+ *
+ * 键为什么不用 Astro 的 `entry.id`：glob 加载器会把文件名 slug 化（空格转连字符、去标点、转小写），
+ * `entry.id` 和磁盘路径并不相同；中文/带空格的文件名按 id 查会静默查不到，日期就退回文件时间。
+ * 所以两边都用「src/content/posts 之后的原始相对路径、去掉扩展名」，完全不依赖 slug 规则。
  *
  * 为什么是「一次调用」：逐文件执行 `git log -1 -- <file>` 在 26 篇时要 20 秒以上，
  * 而一次 `git log --name-status` 只要 0.4 秒，所以这里自己解析输出。
@@ -80,7 +84,7 @@ export function getCommitDates(): Map<string, CommitDates> {
     const file = (paths[paths.length - 1] ?? "").replace(/^"|"$/g, "");
     const id = file
       .replace(/\\/g, "/")
-      .replace(/^src\/content\/posts\//, "")
+      .replace(/^.*?src\/content\/posts\//, "")
       .replace(/\.mdx?$/, "");
 
     if (id === "") continue;

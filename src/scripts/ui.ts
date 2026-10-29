@@ -1,4 +1,6 @@
 import { currentLocale, s } from "./i18n-client";
+import { lockBackground } from "./focus";
+import { readStore, writeStore } from "./storage";
 import type { Locale } from "./i18n-client";
 
 const html = document.documentElement;
@@ -8,8 +10,9 @@ const LOCALE_KEY = "whitespace:locale";
 /** 旧版本用 liubai: 前缀，只读兼容，写入一律走新 key */
 const LEGACY_THEME_KEY = "liubai:theme";
 
+/** 读偏好：存储不可用时返回 null，走默认值 */
 function readStored(key: string, legacy: string): string | null {
-  return localStorage.getItem(key) ?? localStorage.getItem(legacy);
+  return readStore(key, legacy);
 }
 
 type Mode = "light" | "dark" | "system";
@@ -55,7 +58,7 @@ function initTheme(): void {
     btn.addEventListener("click", () => {
       const mode = ((html.dataset.mode as Mode) || "system") as Mode;
       const next = MODE_ORDER[(MODE_ORDER.indexOf(mode) + 1) % MODE_ORDER.length] ?? "system";
-      localStorage.setItem(THEME_KEY, next);
+      writeStore(THEME_KEY, next);
       applyMode(next);
     });
   });
@@ -66,7 +69,7 @@ function initTheme(): void {
 /* ---------------- 语言 ---------------- */
 function applyLocale(locale: Locale): void {
   html.dataset.locale = locale;
-  html.lang = locale === "en" ? "en" : "zh-CN";
+  // 只切界面语言：<html lang> 表示正文语言，由服务端按文章语言输出，这里不要覆盖
   syncLocaleButtons();
 
   const title = document.querySelector<HTMLTitleElement>("title[data-title-zh]");
@@ -96,7 +99,7 @@ function initLocale(): void {
     btn.addEventListener("click", () => {
       const next: Locale = btn.dataset.localeBtn === "en" ? "en" : "zh";
       if (next === currentLocale()) return;
-      localStorage.setItem(LOCALE_KEY, next);
+      writeStore(LOCALE_KEY, next);
       applyLocale(next);
     });
   });
@@ -121,12 +124,14 @@ function initDrawer(): void {
   if (!drawer || !opener) return;
 
   let lastFocus: HTMLElement | null = null;
+  let releaseLock: (() => void) | null = null;
 
   const open = (): void => {
     lastFocus = document.activeElement as HTMLElement | null;
     drawer.classList.add("is-open");
     html.classList.add("is-locked");
     opener.setAttribute("aria-expanded", "true");
+    releaseLock = lockBackground(drawer);
     drawer.querySelector<HTMLElement>("a, button")?.focus();
   };
 
@@ -135,6 +140,8 @@ function initDrawer(): void {
     drawer.classList.remove("is-open");
     html.classList.remove("is-locked");
     opener.setAttribute("aria-expanded", "false");
+    releaseLock?.();
+    releaseLock = null;
     (lastFocus ?? opener).focus();
   };
 

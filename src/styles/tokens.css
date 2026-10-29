@@ -19,7 +19,8 @@
   --color-text: #1b1f24;
   --color-text-soft: #39414a;
   --color-muted: #525c68;
-  --color-faint: #6f7883;
+  /* 对 #fcfcfa 为 4.89:1，满足 WCAG AA；原 #6f7883 只有 4.36，小号元信息不达标 */
+  --color-faint: #67707b;
   --color-border: #e4e3dc;
   --color-border-strong: #d2d1c8;
   --color-accent: #9e3b2b;

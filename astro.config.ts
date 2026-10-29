@@ -12,7 +12,14 @@ export default defineConfig({
   output: "static",
   trailingSlash: "always",
   build: { format: "directory" },
-  integrations: [mdx(), sitemap()],
+  integrations: [
+    mdx(),
+    // 三处分页的第 2 页起都是 noindex，放进 sitemap 是自相矛盾的信号。
+    // 用「数字结尾」精确匹配，避免误伤 /tags/2026/ 这类以数字命名的标签首页。
+    sitemap({
+      filter: (page) => !/\/(?:posts|tags\/[^/]+|categories\/[^/]+)\/\d+\/$/.test(page),
+    }),
+  ],
   markdown: {
     // Astro 7 起 remark/rehype 插件通过 unified() 传入，不再直接挂到 markdown 上
     processor: unified({

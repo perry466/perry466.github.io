@@ -13,12 +13,46 @@ import { absoluteUrl } from "../utils/seo";
  *
  * 阅读器里没有「站点根」的概念：正文里的 `/posts/x/` 会被解析成阅读器自己的域名，
  * 点开就是 404；`/_astro/x.webp` 这类图片同样会裂。所以拼进 feed 之前统一补上域名。
- * 只处理单个 `/` 开头的值，跳过 `//cdn.example.com` 这种协议相对地址。
+ * 只处理单个 `/` 开头的值，跳过 `//cdn.example.com` 这种协议相对地址；
+ * `srcset` 里是「URL + 宽度描述符」的逗号列表，要逐项处理，否则响应式图片在阅读器里全裂。
  */
 function absolutize(html: string): string {
-  return html.replace(/(href|src)="(\/(?!\/)[^"]*)"/g, (_match, attr: string, path: string) => {
-    return `${attr}="${absoluteUrl(path)}"`;
-  });
+  return html
+    .replace(/(href|src)="(\/(?!\/)[^"]*)"/g, (_match, attr: string, path: string) => {
+      return `${attr}="${absoluteUrl(path)}"`;
+    })
+    .replace(/srcset="([^"]*)"/g, (_match, value: string) => {
+      const next = value
+        .split(",")
+        .map((part) => {
+          const [url, ...descriptor] = part.trim().split(/\s+/);
+          if (!url) return "";
+          const absolute = url.startsWith("/") && !url.startsWith("//") ? absoluteUrl(url) : url;
+          return [absolute, ...descriptor].join(" ");
+        })
+        .filter(Boolean)
+        .join(", ");
+      return `srcset="${next}"`;
+    });
+}
+
+/**
+ * 去掉只对网页有意义的交互外壳。
+ *
+ * 代码块的「复制 / Copy」按钮、语言角标由 rehype-enhance 生成，靠页面脚本工作；
+ * 阅读器里没有这段脚本，按钮点不动，只剩一排死控件。
+ * 这里在写入 feed 前把它们摘掉，保留 `<pre><code>` 与文件名标题。
+ *
+ * 注意：这里依赖 rehype-enhance 的产出结构（button 是叶子节点，内部只有 span），
+ * 改那边的标记时记得同步这里；构建后可用 `grep -c "<button" dist/rss.xml` 自检应为 0。
+ */
+function stripInteractive(html: string): string {
+  return html
+    .replace(/<button\b[^>]*>[\s\S]*?<\/button>/g, "")
+    .replace(/<span class="code-block__lang">[^<]*<\/span>/g, "")
+    .replace(/<span><\/span>/g, "")
+    .replace(/<div class="code-block__head">\s*<\/div>/g, "")
+    .replace(/<div class="code-block__head">\s*<span class="code-block__title"><\/span>\s*<\/div>/g, "");
 }
 
 /**
@@ -59,7 +93,7 @@ export async function GET(context: APIContext) {
         // 本站是个人博客，署名由页面版权区承担，feed 里不重复。
         // 分类（栏目）排在标签前面，RSS 阅读器里能直接看出文章属于哪个栏目
         categories: [post.data.lang === "en" ? category.labelEn : category.label, ...post.data.tags],
-        ...(site.rss.fullText && html ? { content: absolutize(html) } : {}),
+        ...(site.rss.fullText && html ? { content: stripInteractive(absolutize(html)) } : {}),
       };
     }),
   );

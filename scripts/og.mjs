@@ -15,7 +15,7 @@
  */
 import { execFileSync, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -140,7 +140,7 @@ function walk(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const path = join(dir, entry.name);
     if (entry.isDirectory()) return walk(path);
-    return entry.name.endsWith(".md") && !entry.name.startsWith("_") ? [path] : [];
+    return /\.mdx?$/.test(entry.name) && !entry.name.startsWith("_") ? [path] : [];
   });
 }
 
@@ -227,7 +227,7 @@ const posts = walk(POSTS_DIR)
   .map((file) => {
     const id = relative(POSTS_DIR, file).split("\\").join("/");
     const data = readFrontMatter(file);
-    const rawPath = id.replace(/\.md$/, "");
+    const rawPath = id.replace(/\.mdx?$/, "");
     const slug = data.slug || rawPath.split("/").map(slugify).join("/");
     return { ...data, id, file, slug, date: resolveDate(file, data.pubDate) };
   })
@@ -273,5 +273,20 @@ writeFileSync(
   `/**\n * 由 scripts/og.mjs（pnpm og）生成，请勿手改。\n * 键是文章的 slug（= 文章 URL 的路径段），值是 public 下的分享图路径。\n */\nexport const ogManifest: Record<string, string> = {\n${lines.join("\n")}\n};\n`,
   "utf8",
 );
+
+// 全量运行时清掉清单不再引用的旧图（改过文件名或 slug 后会留下孤儿文件）
+if (!only) {
+  const kept = new Set(Object.values(manifest));
+  for (const file of readdirSync(OUT_DIR)) {
+    if (!file.endsWith(".png") || kept.has(`/og/${file}`)) continue;
+    try {
+      unlinkSync(join(OUT_DIR, file));
+      console.log(`清理未引用 → public/og/${file}`);
+    } catch {
+      // Windows 上文件可能被看图工具占用；清理失败不该让脚本在最后一步崩掉
+      console.warn(`跳过（文件被占用）→ public/og/${file}`);
+    }
+  }
+}
 
 console.log(`\n共 ${Object.keys(manifest).length} 张，清单 → src/data/og-manifest.ts`);

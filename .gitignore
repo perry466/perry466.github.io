@@ -23,6 +23,12 @@ npm-debug.log*
 pnpm-debug.log*
 *.log
 
+# TypeScript 增量编译缓存（astro check / tsc --build 会产生）
+*.tsbuildinfo
+
+# 分享图脚本（scripts/og.mjs）的渲染中间文件：临时 HTML 与 Chrome profile
+node_modules/.cache/og/
+
 # 本地写作与规划资料，不进入仓库
 静态博客开发文档.md
 dev-context/
