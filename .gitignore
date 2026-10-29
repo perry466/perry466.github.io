@@ -32,6 +32,8 @@ node_modules/.cache/og/
 # 本地写作与规划资料，不进入仓库
 静态博客开发文档.md
 dev-context/
+# 本地发布工具（Post Studio）方案，仅供本机参考，不对外公开
+docs/post-studio-plan.md
 
 # 工具产生的本地数据，不进入仓库
 .workbuddy/
