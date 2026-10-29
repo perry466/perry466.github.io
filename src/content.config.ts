@@ -49,4 +49,14 @@ const posts = defineCollection({
     }),
 });
 
-export const collections = { posts };
+/**
+ * 碎碎念：一句话的短内容，不需要标题、分类、标签。
+ * 正文就是内容本身；日期不写，由 git 首次提交时间补齐（见 pages/whispers.astro）。
+ * 以 `_` 开头的文件同样不进入集合，可当草稿。
+ */
+const whispers = defineCollection({
+  loader: glob({ pattern: "*.md", base: "./src/content/whispers" }),
+  schema: z.object({}),
+});
+
+export const collections = { posts, whispers };

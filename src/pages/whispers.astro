@@ -1,0 +1,108 @@
+---
+import PageHead from "../components/PageHead.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCollection, render } from "astro:content";
+import { formatISO, formatLong } from "../utils/format";
+import { getCommitDates } from "../utils/git-dates";
+import { tf } from "../i18n/ui";
+import { breadcrumbJsonLd, pageTitle } from "../utils/seo";
+
+const commits = getCommitDates("src/content/whispers");
+
+type Item = { date: Date | null; Content: any };
+const items: Item[] = [];
+
+for (const entry of await getCollection("whispers")) {
+  const commit = commits.get(entry.id.replace(/\.mdx?$/, ""));
+  const { Content } = await render(entry);
+  items.push({ date: commit?.first ?? null, Content });
+}
+
+const sorted = items.sort((a, b) => (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0));
+---
+
+<BaseLayout
+  title={pageTitle({ title: "碎碎念" })}
+  titleEn={pageTitle({ title: "Whispers", locale: "en" })}
+  description="一些很简短的句子，想到就记一条。"
+  descriptionEn="Short one-line thoughts, jotted down as they come."
+  path="/whispers/"
+  jsonLd={breadcrumbJsonLd([
+    { name: "首页", path: "/" },
+    { name: "碎碎念", path: "/whispers/" },
+  ])}
+>
+  <div class="container">
+    <PageHead
+      titleZh="碎碎念"
+      titleEn="Whispers"
+      descZh="一些很简短的句子，想到就记一条。"
+      descEn="Short one-line thoughts, jotted down as they come."
+      metaZh={tf("zh", "list.total", { n: sorted.length })}
+      metaEn={tf("en", "list.total", { n: sorted.length })}
+    />
+
+    <ol class="whispers">
+      {
+        sorted.map(({ date, Content }) => (
+          <li class="whisper">
+            {date && (
+              <time class="whisper-date" datetime={formatISO(date)}>
+                <span class="t-zh">{formatLong(date, "zh")}</span>
+                <span class="t-en">{formatLong(date, "en")}</span>
+              </time>
+            )}
+            <div class="whisper-body">
+              <Content />
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</BaseLayout>
+
+<style>
+  .whispers {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: 34rem;
+  }
+  .whisper {
+    padding-block: var(--space-5);
+    border-bottom: 1px dashed var(--color-border);
+  }
+  .whisper:first-child {
+    padding-top: var(--space-2);
+  }
+  .whisper:last-child {
+    border-bottom: none;
+  }
+  .whisper-date {
+    display: block;
+    font-size: var(--text-xs);
+    color: var(--color-faint);
+    margin-bottom: var(--space-2);
+  }
+  /* 呼应「留白」：每条前一枚小小的墨点 */
+  .whisper-body {
+    position: relative;
+    padding-left: var(--space-5);
+    font-size: 1.05rem;
+    line-height: 1.9;
+  }
+  .whisper-body::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 0.72em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-faint);
+  }
+  .whisper-body :global(p) {
+    margin: 0;
+  }
+</style>

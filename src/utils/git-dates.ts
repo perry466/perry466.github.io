@@ -9,14 +9,17 @@ export interface CommitDates {
   count: number;
 }
 
-let cache: Map<string, CommitDates> | null = null;
+const caches = new Map<string, Map<string, CommitDates>>();
 
 /**
- * 一次性读完整段 git 历史，得到每篇文章的提交时间（按**文件相对路径**索引，如 `tech/css-grid-patterns`）。
+ * 读取 git 历史，得到每个内容文件的提交时间。
+ *
+ * @param base 内容目录相对路径，如 "src/content/posts"（文章）、"src/content/whispers"（碎碎念）。
+ *             返回的 Map 以 base 之后的相对路径（去扩展名）为键。
  *
  * 键为什么不用 Astro 的 `entry.id`：glob 加载器会把文件名 slug 化（空格转连字符、去标点、转小写），
  * `entry.id` 和磁盘路径并不相同；中文/带空格的文件名按 id 查会静默查不到，日期就退回文件时间。
- * 所以两边都用「src/content/posts 之后的原始相对路径、去掉扩展名」，完全不依赖 slug 规则。
+ * 所以两边都用「base 之后的原始相对路径、去掉扩展名」，完全不依赖 slug 规则。
  *
  * 为什么是「一次调用」：逐文件执行 `git log -1 -- <file>` 在 26 篇时要 20 秒以上，
  * 而一次 `git log --name-status` 只要 0.4 秒，所以这里自己解析输出。
@@ -33,9 +36,11 @@ let cache: Map<string, CommitDates> | null = null;
  *
  * 不是 git 仓库（例如直接下载的 zip）时返回空表，由调用方退回文件修改时间。
  */
-export function getCommitDates(): Map<string, CommitDates> {
-  if (cache) return cache;
-  cache = new Map();
+export function getCommitDates(base = "src/content/posts"): Map<string, CommitDates> {
+  const cached = caches.get(base);
+  if (cached) return cached;
+  const cache = new Map<string, CommitDates>();
+  caches.set(base, cache);
 
   let raw = "";
   try {
@@ -49,7 +54,7 @@ export function getCommitDates(): Map<string, CommitDates> {
         "--name-status",
         "--format=%x1e%cI",
         "--",
-        "src/content/posts",
+        base,
       ],
       {
         cwd: process.cwd(),
@@ -81,10 +86,10 @@ export function getCommitDates(): Map<string, CommitDates> {
     // 只认「新增」和「修改」；重命名（R）等类型跳过，避免把改名当成新文章
     if (!/^[AM]$/.test(status ?? "") || paths.length === 0) continue;
 
-    const file = (paths[paths.length - 1] ?? "").replace(/^"|"$/g, "");
+    const file = (paths[paths.length - 1] ?? "").replace(/^"|"$/g, "").replace(/\\/g, "/");
+    if (!file.startsWith(`${base}/`)) continue;
     const id = file
-      .replace(/\\/g, "/")
-      .replace(/^.*?src\/content\/posts\//, "")
+      .slice(base.length + 1)
       .replace(/\.mdx?$/, "");
 
     if (id === "") continue;

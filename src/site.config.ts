@@ -56,6 +56,7 @@ export const site = {
     { label: "分类", labelEn: "Categories", href: "/categories/", dropdown: "categories" },
     { label: "归档", labelEn: "Archive", href: "/archive/" },
     { label: "标签", labelEn: "Tags", href: "/tags/" },
+    { label: "碎碎念", labelEn: "Whispers", href: "/whispers/" },
     { label: "关于", labelEn: "About", href: "/about/" },
   ] satisfies NavItem[],
 
@@ -88,6 +89,12 @@ export const site = {
       label: "笔记",
       labelEn: "Notes",
       description: "成体系的整理，方便回头复习。",
+    },
+    {
+      slug: "mingxin",
+      label: "明心镜鉴",
+      labelEn: "Mingxin",
+      description: "读小说时写下的短评与随想。",
     },
     {
       slug: "uncategorized",
