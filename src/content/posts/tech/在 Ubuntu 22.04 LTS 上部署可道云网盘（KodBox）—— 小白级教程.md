@@ -10,7 +10,7 @@ tags: ["ubuntu", "可道云","kodbox"]
 
 在终端窗口（看到 `#` 或 `$` 提示符的地方）
 
-一条一条复制并回车运行111
+一条一条复制并回车运行
 
 ```bash
 sudo apt update && sudo apt upgrade -y
